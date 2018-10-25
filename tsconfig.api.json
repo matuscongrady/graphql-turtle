@@ -1,0 +1,10 @@
+{
+	"compilerOptions": {
+		"target": "es5",
+		"moduleResolution": "node",
+		"module": "commonjs",
+		"sourceMap": true,
+		"skipLibCheck": true
+	},
+	"exclude": ["client"]
+}

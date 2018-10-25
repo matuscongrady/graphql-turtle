@@ -1,0 +1,22 @@
+{
+	"compilerOptions": {
+		"target": "es5",
+		"moduleResolution": "node",
+		"module": "commonjs",
+		"sourceMap": true,
+		"baseUrl": "./",
+		"jsx": "react",
+		"lib": ["esnext", "dom"],
+		"skipLibCheck": true,
+		"paths": {
+			"@reusable/*": ["client/components/_reusable/*"],
+			"@components/*": ["client/components/*"],
+			"@services/*": ["client/services/*"],
+			"@static/*": ["client/static/*"],
+			"@store": ["client/store.ts"],
+			"@utils/*": ["client/utils/*"],
+			"@pages/*": ["./client/pages/*"],
+			"@/*": ["client/*"]
+		}
+	}
+}
