@@ -25,31 +25,6 @@ const config = {
         type: "javascript/auto",
       },
 			{
-				test: /\.less$/,
-				use: [
-					{
-						loader: isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
-						options: {
-							sourceMap: isDev
-						}
-					},
-					{
-						loader: 'css-loader',
-						options: {
-							importLoaders: 1,
-							sourceMap: process.env.NODE_ENV !== 'production'
-						}
-					},
-					{
-						loader: 'less-loader',
-						options: {
-							sourceMap: isDev,
-							javascriptEnabled: true
-						}
-					}
-				]
-			},
-			{
 				test: /\.(mjs|ts|tsx)$/,
 				use: 'babel-loader',
 				exclude: /node_modules/
@@ -77,7 +52,6 @@ const config = {
 				options: {
 					name: path => {
 						if (!/node_modules|bower_components/.test(path)) return 'fonts/[name].[hash].[ext]';
-
 						return (
 							'fonts/vendor/' +
 							path.replace(/\\/g, '/').replace(/((.*(node_modules|bower_components))|fonts|font|assets)\//g, '') +

@@ -2195,11 +2195,6 @@ cliui@^4.0.0:
     strip-ansi "^4.0.0"
     wrap-ansi "^2.0.0"
 
-clone@^2.1.1:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/clone/-/clone-2.1.2.tgz#1b7f4b9f591f1e8f83670401600345a02887435f"
-  integrity sha1-G39Ln1kfHo+DZwQBYANFoCiHQ18=
-
 co@^4.6.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/co/-/co-4.6.0.tgz#6ea6bdf3d853ae54ccb8e47bfa0bf3f9031fb184"
@@ -3143,14 +3138,6 @@ ee-first@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
-
-ejs-loader@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/ejs-loader/-/ejs-loader-0.3.1.tgz#280c8e030bd32428c29826f6bbf6b6d0c14f7ca4"
-  integrity sha512-bdJHTxBY3uqZ6L5V1WRohf1gr7ousgESpArPVseEQCWCATs+M8BRqxyJWqnFo+h815gTA++g5LyAyqS5OTIfdQ==
-  dependencies:
-    loader-utils "^0.2.7"
-    lodash "^3.6.0"
 
 ejs@^2.6.1:
   version "2.6.1"
@@ -4997,15 +4984,6 @@ lcid@^2.0.0:
   dependencies:
     invert-kv "^2.0.0"
 
-less-loader@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/less-loader/-/less-loader-4.1.0.tgz#2c1352c5b09a4f84101490274fd51674de41363e"
-  integrity sha512-KNTsgCE9tMOM70+ddxp9yyt9iHqgmSs0yTZc5XH5Wo+g80RWRIYNqE58QJKm/yMud5wZEvz50ugRDuzVIkyahg==
-  dependencies:
-    clone "^2.1.1"
-    loader-utils "^1.1.0"
-    pify "^3.0.0"
-
 load-json-file@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/load-json-file/-/load-json-file-1.1.0.tgz#956905708d58b4bab4c2261b04f59f31c99374c0"
@@ -5032,7 +5010,7 @@ loader-runner@^2.3.0:
   resolved "https://registry.yarnpkg.com/loader-runner/-/loader-runner-2.3.1.tgz#026f12fe7c3115992896ac02ba022ba92971b979"
   integrity sha512-By6ZFY7ETWOc9RFaAIb23IjJVcM4dvJC/N57nmdz9RSkMXvAXGI7SyVlAw3v8vjtDRlqThgVDVmTnr9fqMlxkw==
 
-loader-utils@^0.2.16, loader-utils@^0.2.7:
+loader-utils@^0.2.16:
   version "0.2.17"
   resolved "https://registry.yarnpkg.com/loader-utils/-/loader-utils-0.2.17.tgz#f86e6374d43205a6e6c60e9196f17c0299bfb348"
   integrity sha1-+G5jdNQyBabmxg6RlvF8Apm/s0g=
@@ -5198,11 +5176,6 @@ lodash.uniq@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
   integrity sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=
-
-lodash@^3.6.0:
-  version "3.10.1"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
-  integrity sha1-W/Rejkm6QYnhfUgnid/RW9FAt7Y=
 
 lodash@^4.0.0, lodash@^4.16.5, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.2.0, lodash@~4.17.10:
   version "4.17.11"
@@ -7355,10 +7328,10 @@ react-dom@^16.5.0:
     prop-types "^15.6.2"
     scheduler "^0.10.0"
 
-react-easy-state@5.1.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/react-easy-state/-/react-easy-state-5.1.0.tgz#eb7219d491f2fc98e26b00d6ae6163493935d6f0"
-  integrity sha512-pUCnYr79ORtXlDV6Aojd+jJpbcL2e49eTaBELFybOLrPUJp5CIRyzcrYwmVBOi2e+USjkTObO392Q+YCEzv/Pw==
+react-easy-state@6.0.4:
+  version "6.0.4"
+  resolved "https://registry.yarnpkg.com/react-easy-state/-/react-easy-state-6.0.4.tgz#94a124fe69723abcb922c15059dd444b2e3499f3"
+  integrity sha512-aJ+lje879290+jWLgWXe3/iSWT6iqKw8rwGu42qt+d17TUugqy3sW90FExLH5i4q/C0fMTE0TC6Wn9WQHjCBCw==
   dependencies:
     "@nx-js/observer-util" "^4.1.1"
 

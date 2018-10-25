@@ -49,7 +49,7 @@ export default view(() => {
           addonBefore={<Icon type="deployment-unit" theme="outlined" />}
         />
         <p>
-          You can use <u>api.graph.cool/simple/v1/cj7j2myai03tg0194pj6cjr5d</u>
+          You can use <u>https://api.graph.cool/simple/v1/cj7j2myai03tg0194pj6cjr5d</u>
         </p>
         <Button
           loading={localStore.isLoading}
