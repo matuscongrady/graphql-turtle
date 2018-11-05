@@ -13,9 +13,8 @@
 			"@components/*": ["client/components/*"],
 			"@services/*": ["client/services/*"],
 			"@static/*": ["client/static/*"],
-			"@store": ["client/store.ts"],
+			"@queries/*": ["client/queries/*"],
 			"@utils/*": ["client/utils/*"],
-			"@pages/*": ["./client/pages/*"],
 			"@/*": ["client/*"]
 		}
 	}

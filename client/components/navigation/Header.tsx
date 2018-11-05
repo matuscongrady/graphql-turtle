@@ -1,6 +1,5 @@
 import { Layout } from 'antd';
 import * as React from 'react';
-import { withRouter } from 'react-router-dom';
 
 const Header = () => {
   return (
@@ -10,4 +9,4 @@ const Header = () => {
   );
 };
 
-export default withRouter(Header);
+export default Header;
