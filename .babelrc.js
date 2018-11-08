@@ -6,8 +6,8 @@ const config = {
     ['@babel/plugin-syntax-dynamic-import'],
     ['@babel/proposal-class-properties', { loose: true }],
     ['@babel/proposal-decorators', { loose: true, legacy: true }],
-    ['@babel/proposal-object-rest-spread', { loose: true }]
-    // 'react-hot-loader/babel'
+    ['@babel/proposal-object-rest-spread', { loose: true }],
+    'react-hot-loader/babel'
   ],
   ignore: ['node_modules']
 };
@@ -17,7 +17,7 @@ if (isProd) {
     [
       '@babel/preset-env',
       {
-        targets: { browsers: ['edge > 14'] },
+        targets: { browsers: ['> 1%'] },
         useBuiltIns: 'usage',
         modules: false,
         loose: true

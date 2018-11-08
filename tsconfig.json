@@ -14,8 +14,8 @@
 			"@services/*": ["client/services/*"],
 			"@static/*": ["client/static/*"],
 			"@queries/*": ["client/queries/*"],
-			"@utils/*": ["client/utils/*"],
-			"@/*": ["client/*"]
+      "@utils/*": ["utils/*"],
+      "@/*": ["client/*"]
 		}
 	}
 }

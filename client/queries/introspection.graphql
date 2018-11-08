@@ -1,44 +1,44 @@
 query IntrospectionQuery {
-    __schema {
-      queryType { name }
-      mutationType { name }
-      types {
-        ...FullType
-      }
+  __schema {
+    queryType {
+      name
+    }
+    mutationType {
+      name
+    }
+    types {
+      ...FullType
     }
   }
+}
 
-  fragment FullType on __Type {
-    kind
+fragment FullType on __Type {
+  kind
+  name
+  fields {
     name
-    fields(includeDeprecated: true) {
-      name
-      args {
-        ...InputValue
-      }
-      type {
-        ...TypeRef
-      }
-    }
-    inputFields {
-      ...InputValue
-    }
-    enumValues {
-      name
-    }
-    possibleTypes {
+    type {
       ...TypeRef
     }
   }
-
-  fragment InputValue on __InputValue {
-    name
-    description
-    type { ...TypeRef }
-    defaultValue
+  possibleTypes {
+    ...TypeRef
   }
+}
 
-  fragment TypeRef on __Type {
+fragment TypeRef on __Type {
+  kind
+  name
+  ofType {
     kind
     name
+    ofType {
+      kind
+      name
+      ofType {
+        kind
+        name
+      }
+    }
   }
+}

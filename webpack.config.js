@@ -6,6 +6,7 @@ const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const envConfig = require('./client/.env.js');
+const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 
 const isDev = process.env.NODE_ENV === 'development';
 const port = process.env.PORT || 3000;
@@ -56,7 +57,7 @@ const config = {
       '@services': path.resolve(__dirname, './client/services'),
       '@static': path.resolve(__dirname, './client/static'),
       '@queries': path.resolve(__dirname, './client/queries'),
-      '@utils': path.resolve(__dirname, './client/utils'),
+      '@utils': path.resolve(__dirname, './utils'),
       '@': path.resolve(__dirname, './client')
     }
   },
@@ -70,6 +71,8 @@ const config = {
     hints: false
   },
   plugins: [
+    new ProgressBarPlugin(),
+    new FaviconsWebpackPlugin('./client/static/graphql-turtle.png'),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.EnvironmentPlugin(envConfig),
     new HtmlWebpackPlugin({
@@ -93,16 +96,7 @@ if (isDev) {
     })
   ];
 } else {
-  config.plugins = [
-    ...config.plugins,
-    new MiniCssExtractPlugin({
-      filename: '[name].[hash].css',
-      chunkFilename: '[id].[hash].css'
-    }),
-    new OptimizeCSSAssetsPlugin({}),
-    new webpack.NoEmitOnErrorsPlugin(),
-    new ProgressBarPlugin()
-  ];
+  config.plugins = [...config.plugins, new webpack.NoEmitOnErrorsPlugin()];
 }
 
 if (envConfig.APP_ENV === 'analyze') {
