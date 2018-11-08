@@ -1,9 +1,9 @@
-import Schema from '@components/schema-view/SchemaView';
+import RuleManager from '@components/rule-manager/RuleManager';
+import Schema from '@components/schema-view/SchemaContainer';
 import { AppBar, CssBaseline, Tab, Tabs, Toolbar, Typography } from '@material-ui/core';
 import ExploreIcon from '@material-ui/icons/Explore';
 import * as React from 'react';
 import { hot, setConfig } from 'react-hot-loader';
-import SwipeableViews from 'react-swipeable-views';
 import { useCounter } from 'react-use';
 
 setConfig({ pureSFC: true } as any);
@@ -16,9 +16,9 @@ const App = () => {
   }
 
   return (
-    <>
+    <div>
       <CssBaseline />
-      <AppBar position="static" style={{ position: 'relative', paddingLeft: '10%' }}>
+      <AppBar position="static" style={{ position: 'relative', paddingLeft: '13%' }}>
         <Toolbar>
           <ExploreIcon />
           <Typography variant="h5" color="inherit" noWrap style={{ paddingLeft: '15px' }}>
@@ -26,22 +26,20 @@ const App = () => {
           </Typography>
         </Toolbar>
       </AppBar>
-      <main style={{ width: '80%', margin: 'auto', paddingTop: '40px' }}>
+      <main style={{ width: '70%', margin: 'auto', paddingTop: '20px' }}>
         <Typography variant="h5" align="center" gutterBottom>
           Authorization config
         </Typography>
-        <AppBar position="static" color="default">
+        <AppBar style={{ marginBottom: '20px' }} position="static" color="default">
           <Tabs value={selectedViewIndex} onChange={selecteView} indicatorColor="primary" textColor="primary" fullWidth>
             <Tab label="Schema" />
-            <Tab label="Saved rules" />
+            <Tab label="Rule manager" />
           </Tabs>
         </AppBar>
-        <SwipeableViews index={selectedViewIndex} onChangeIndex={set}>
-          <Schema />
-          <div>2</div>
-        </SwipeableViews>
+        {selectedViewIndex === 0 && <Schema key={1} />}
+        {selectedViewIndex === 1 && <RuleManager key={2} />}
       </main>
-    </>
+    </div>
   );
 };
 
