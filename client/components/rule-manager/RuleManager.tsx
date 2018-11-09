@@ -10,9 +10,7 @@ import {
   ExpansionPanelActions,
   ExpansionPanelDetails,
   ExpansionPanelSummary,
-  FormControl,
   MenuItem,
-  Paper,
   Select,
   TextField,
   Typography
@@ -102,9 +100,8 @@ export default () => {
             type="string"
             fullWidth
             onChange={e => setRuleName(e.target.value)}
-            style={{ marginLeft: '3%', width: '94%' }}
           />
-          <Paper elevation={3} style={{ padding: '10px', margin: '10px' }}>
+          <div style={{ marginTop: '25px' }}>
             <Typography variant="h6" color="inherit" noWrap>
               Rule definition
             </Typography>
@@ -118,16 +115,14 @@ export default () => {
               fullWidth
               onChange={e => setRequestorProperty(e.target.value)}
             />
-            <FormControl>
-              <Select value={operator} onChange={handleOperatorChange}>
-                <MenuItem value=">">{'>'}</MenuItem>
-                <MenuItem value="<">{'<'}</MenuItem>
-                <MenuItem value=">=">{'>='}</MenuItem>
-                <MenuItem value="<=">{'<='}</MenuItem>
-                <MenuItem value="==">{'=='}</MenuItem>
-                <MenuItem value="!==">{'!=='}</MenuItem>
-              </Select>
-            </FormControl>
+            <Select style={{ marginTop: '15px' }} value={operator} onChange={handleOperatorChange}>
+              <MenuItem value=">">{'>'}</MenuItem>
+              <MenuItem value="<">{'<'}</MenuItem>
+              <MenuItem value=">=">{'>='}</MenuItem>
+              <MenuItem value="<=">{'<='}</MenuItem>
+              <MenuItem value="==">{'=='}</MenuItem>
+              <MenuItem value="!==">{'!=='}</MenuItem>
+            </Select>
             <TextField
               value={value}
               onChange={e => setValue(e.target.value)}
@@ -138,9 +133,9 @@ export default () => {
               type="string"
               fullWidth
             />
-          </Paper>
+          </div>
         </DialogContent>
-        <DialogActions style={{ padding: '10px' }}>
+        <DialogActions style={{ padding: '5px' }}>
           <Button onClick={closeDialog} color="primary">
             Cancel
           </Button>
