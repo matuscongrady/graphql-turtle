@@ -15,8 +15,10 @@ query IntrospectionQuery {
 fragment FullType on __Type {
   kind
   name
+  description
   fields {
     name
+    description
     type {
       ...TypeRef
     }

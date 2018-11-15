@@ -12,27 +12,42 @@ import {
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { QueryField } from '@utils/schema-introspection';
+import { css } from 'emotion';
 import * as React from 'react';
 import AddRuleButton from './AddRuleButton';
 
 const QueryFieldItem = ({ queryField }: { queryField: QueryField }) => {
+  const count = 0;
   return (
     <>
       <ExpansionPanel key={queryField.name}>
-        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant="subheading">{queryField.name}</Typography>
+        <ExpansionPanelSummary
+          classes={{
+            content: css`
+              margin: 0px;
+            `
+          }}
+          expandIcon={<ExpandMoreIcon />}
+        >
+          <Typography variant="subtitle1">
+            {queryField.name}&nbsp;&nbsp;
+            <Chip style={{ height: '24px' }} label={`(${count} rules)`} />
+            <Chip
+              style={{ height: '24px' }}
+              label={`${queryField.isList ? '[' : ''}${queryField.type}${queryField.isList ? ']' : ''}`}
+            />
+          </Typography>
         </ExpansionPanelSummary>
         <Divider />
         <ExpansionPanelDetails style={{ padding: '0px', display: 'initial' }}>
           <List>
             {queryField.fields.map(field => (
               <ListItem disableGutters key={field.name} style={{ padding: '3px 10px 3px 0px', color: 'white' }}>
-                <ListItemText style={{ fontSize: '1rem', fontWeight: 'bold' }} inset primary={field.name} />
+                <ListItemText primaryTypographyProps={{ variant: 'subtitle2' }} inset primary={field.name} />
                 {field.isNonNull && (
-                  <Chip style={{ width: '80px' }} variant="outlined" color="secondary" label="Non Null" />
+                  <Chip style={{ height: '24px', width: '80px' }} color="secondary" label="Non Null" />
                 )}
-                <Chip style={{ width: '100px' }} variant="outlined" label={field.type} />
-                <AddRuleButton text="Manage type rules" height="24px" />
+                <Chip style={{ height: '24px', width: '100px' }} label={field.type} />
               </ListItem>
             ))}
           </List>

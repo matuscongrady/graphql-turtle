@@ -1,20 +1,23 @@
-import RuleManager from '@components/rule-manager/RuleManager';
-import Schema from '@components/schema-view/SchemaContainer';
-import { AppBar, CssBaseline, Tab, Tabs, Toolbar, Typography } from '@material-ui/core';
+import MainView from '@components/MainView';
+import { AppBar, CircularProgress, CssBaseline, Toolbar, Typography } from '@material-ui/core';
 import ExploreIcon from '@material-ui/icons/Explore';
+import useFetch from 'fetch-suspense';
 import * as React from 'react';
 import { hot, setConfig } from 'react-hot-loader';
-import { useCounter } from 'react-use';
+import { CONFIG_URL } from './contants';
 
 setConfig({ pureSFC: true } as any);
 
+const MainAppWithExistingConfig = () => {
+  const config = useFetch(CONFIG_URL);
+  return (
+    <div>
+      <MainView config={config} />
+    </div>
+  );
+};
+
 const App = () => {
-  const [selectedViewIndex, { set }] = useCounter(0);
-
-  function selecteView(_event, value) {
-    set(value);
-  }
-
   return (
     <div>
       <CssBaseline />
@@ -22,23 +25,17 @@ const App = () => {
         <Toolbar>
           <ExploreIcon />
           <Typography variant="h5" color="inherit" noWrap style={{ paddingLeft: '15px' }}>
-            GraphQL Turtle
+            GraphQL Turtle - Authorization config
           </Typography>
         </Toolbar>
       </AppBar>
-      <main style={{ width: '70%', margin: 'auto', paddingTop: '20px' }}>
-        <Typography variant="h5" align="center" gutterBottom>
-          Authorization config
-        </Typography>
-        <AppBar style={{ marginBottom: '20px' }} position="static" color="default">
-          <Tabs value={selectedViewIndex} onChange={selecteView} indicatorColor="primary" textColor="primary" fullWidth>
-            <Tab label="Schema" />
-            <Tab label="Rule manager" />
-          </Tabs>
-        </AppBar>
-        {selectedViewIndex === 0 && <Schema key={1} />}
-        {selectedViewIndex === 1 && <RuleManager key={2} />}
-      </main>
+      {process.env.IS_CREATE_MODE ? (
+        <MainView />
+      ) : (
+        <React.Suspense fallback={<CircularProgress />}>
+          <MainAppWithExistingConfig />
+        </React.Suspense>
+      )}
     </div>
   );
 };
