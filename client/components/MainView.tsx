@@ -23,7 +23,7 @@ export default ({ config }: { config?: any }) => {
   console.log(config);
   const [url, setURL] = useLocalStorage(LOCALSTORAGE_SCHEMA_URL_KEY, '');
   const [schemaIntrospection, setSchemaIntrospection] = React.useState<ParsedSchemaIntrospection>({});
-  const [error, setError] = React.useState<boolean>(null);
+  const [error, setError] = React.useState<boolean>(false);
   const [isLoading, setLoading] = React.useState<boolean>(false);
   const [selectedViewIndex, { set }] = useCounter(0);
 
