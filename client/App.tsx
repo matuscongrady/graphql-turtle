@@ -25,7 +25,7 @@ const App = () => {
   return (
     <div>
       <CssBaseline />
-      <AppBar position="static" style={{ position: 'relative', paddingLeft: '13%' }}>
+      <AppBar position="static" style={{ position: 'relative', paddingLeft: '8%' }}>
         <Toolbar>
           <ExploreIcon />
           <Typography variant="h5" color="inherit" noWrap style={{ paddingLeft: '15px' }}>

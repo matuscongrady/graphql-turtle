@@ -1,3 +1,4 @@
+import { isValidJavascriptCode } from '@/utils/parsing';
 import {
   Button,
   Dialog,
@@ -22,28 +23,16 @@ import { useBoolean } from 'react-hanger';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { prism } from 'react-syntax-highlighter/dist/styles/prism';
 import { useLocalStorage } from 'react-use';
-
-const SAVED_RULES_LOCALSTORAGE_KEY = 'SAVED_RULES';
-
-const isValidJavascriptCode = (code: string): boolean => {
-  try {
-    eval(code);
-  } catch (e) {
-    if (e instanceof SyntaxError) return false;
-    return true;
-  }
-};
+import { AVAILABLE_RULES_LOCALSTORAGE_KEY } from '../../contants';
 
 export default () => {
   const { setTrue: openDialog, setFalse: closeDialog, value: isDialogOpen } = useBoolean(false);
   const [ruleName, setRuleName] = React.useState('');
   const [ruleDefinition, setRuleDefinition] = React.useState('');
-  const [rules, saveRules] = useLocalStorage(SAVED_RULES_LOCALSTORAGE_KEY, '');
-  const savedRules = JSON.parse(rules || '[]');
+  const [rules, saveRules] = useLocalStorage(AVAILABLE_RULES_LOCALSTORAGE_KEY);
 
   function createNewRule() {
-    savedRules.push({ ruleDefinition, name: ruleName });
-    saveRules(JSON.stringify(savedRules));
+    saveRules(rules.concat({ ruleDefinition, name: ruleName }));
     closeDialog();
   }
 
@@ -64,7 +53,7 @@ export default () => {
         &nbsp;Create new rule
       </Button>
       <div style={{ paddingTop: '15px' }}>
-        {savedRules.map(rule => (
+        {rules.map(rule => (
           <ExpansionPanel key={rule.name}>
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
               <Typography>{rule.name}</Typography>
@@ -107,7 +96,6 @@ export default () => {
               Rule definition - must be a valid ES6 javascript syntax
             </Typography>
             <TextField
-              autoFocus
               error={!isValidCode}
               value={ruleDefinition}
               margin="dense"

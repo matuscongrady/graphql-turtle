@@ -62,7 +62,7 @@ const FieldItem = ({ field, parentType }: { field: TypeField; parentType: string
                       <Chip style={{ height: '24px', width: '80px' }} color="secondary" label="Non Null" />
                     )}
                     <TypeChip field={nestedField} width={220} />
-                    {parentType === 'TYPE' && (
+                    {parentType === 'Type' && (
                       <RuleManagementButton
                         parentType={nestedField.name}
                         fieldName={nestedField.name}

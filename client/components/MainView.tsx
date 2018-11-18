@@ -1,6 +1,10 @@
+import { LOCALSTORAGE_ENDPOINT_URL_KEY } from '@/contants';
+import { getExportDataURI, getURL } from '@/utils/parsing';
+import ImportConfig from '@components/import-config/ImportConfig';
 import RuleManager from '@components/rule-manager/RuleManager';
 import TypeExplorer from '@components/schema-view/TypeExplorer';
 import { AppBar, Button, CircularProgress, Tab, Tabs, TextField } from '@material-ui/core';
+import ExportIcon from '@material-ui/icons/PresentToAll';
 import SaveIcon from '@material-ui/icons/SaveAlt';
 import IntrospectionQuery from '@queries/introspection.graphql';
 import { ErrorMessage } from '@reusable/ErrorMessage';
@@ -16,10 +20,6 @@ enum RootParentType {
   TYPE = 'Type'
 }
 
-const getURL = (url: string) => (url.startsWith('http') ? url : `https://${url}`);
-
-const LOCALSTORAGE_SCHEMA_URL_KEY = 'SCHEMA_URL';
-
 interface ParsedSchemaIntrospection {
   queries?: any;
   mutations?: any;
@@ -27,7 +27,7 @@ interface ParsedSchemaIntrospection {
 }
 
 export default ({  }: { config?: any }) => {
-  const [url, setURL] = useLocalStorage(LOCALSTORAGE_SCHEMA_URL_KEY, '');
+  const [url, setURL] = useLocalStorage(LOCALSTORAGE_ENDPOINT_URL_KEY, '');
   const [schemaIntrospection, setSchemaIntrospection] = React.useState<ParsedSchemaIntrospection>(null);
   const [error, setError] = React.useState<boolean>(false);
   const [isLoading, setLoading] = React.useState<boolean>(false);
@@ -61,7 +61,7 @@ export default ({  }: { config?: any }) => {
   }
 
   return (
-    <main style={{ width: '70%', margin: 'auto', paddingTop: '20px' }}>
+    <main style={{ width: '80%', margin: 'auto', paddingTop: '20px' }}>
       <TextField
         id="outlined-name"
         label="Schema URL"
@@ -74,6 +74,18 @@ export default ({  }: { config?: any }) => {
         <SaveIcon />
         &nbsp; Download introspection
       </Button>
+      <div>
+        <Button
+          style={{ float: 'right' }}
+          variant="contained"
+          color="primary"
+          href={getExportDataURI()}
+          download="turtle-config.json"
+        >
+          <ExportIcon />
+          &nbsp; Export config
+        </Button>
+      </div>
       <p>
         You can use:
         <br />
@@ -85,6 +97,7 @@ export default ({  }: { config?: any }) => {
           <Tab label="Mutation rules" />
           <Tab label="Per-Type rules" />
           <Tab label="Rule manager" />
+          <Tab label="Import config" />
         </Tabs>
       </AppBar>
       {error && <ErrorMessage message="Error fetching schema!" />}
@@ -99,6 +112,7 @@ export default ({  }: { config?: any }) => {
         <TypeExplorer parentType={RootParentType.TYPE} fields={schemaIntrospection.types} />
       )}
       {selectedViewIndex === 3 && <RuleManager />}
+      {selectedViewIndex === 4 && <ImportConfig />}
     </main>
   );
 };

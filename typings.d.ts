@@ -24,6 +24,15 @@ enum RootParentType {
   TYPE = 'Type'
 }
 
+interface AvailableRule {
+  name: string;
+  ruleDefinition: string;
+}
+
+interface ActiveRule {
+  rule: string
+}
+
 enum FieldKind {
   SCALAR = 'SCALAR',
   NON_NULL = 'NON_NULL',
