@@ -29,12 +29,16 @@ export default () => {
   const { setTrue: openDialog, setFalse: closeDialog, value: isDialogOpen } = useBoolean(false);
   const [ruleName, setRuleName] = React.useState('');
   const [ruleDefinition, setRuleDefinition] = React.useState('');
-  const [rules, saveRules] = useLocalStorage(AVAILABLE_RULES_LOCALSTORAGE_KEY);
+  const [rules, saveRules] = useLocalStorage<AvailableRule[]>(AVAILABLE_RULES_LOCALSTORAGE_KEY);
 
   function createNewRule() {
     saveRules(rules.concat({ ruleDefinition, name: ruleName }));
     closeDialog();
   }
+
+  const deleteRule = (name: string) => () => {
+    saveRules(rules.filter(rule => rule.name !== name));
+  };
 
   const isValidCode = isValidJavascriptCode(ruleDefinition);
 
@@ -68,7 +72,7 @@ export default () => {
               <Button variant="fab" color="primary" aria-label="Add">
                 <EditIcon />
               </Button>
-              <Button variant="fab" color="secondary" aria-label="Edit">
+              <Button variant="fab" color="secondary" onClick={deleteRule(rule.name)} aria-label="Edit">
                 <DeleteIcon />
               </Button>
             </ExpansionPanelActions>
