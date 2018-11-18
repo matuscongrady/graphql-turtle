@@ -1,28 +1,34 @@
 import RuleManager from '@components/rule-manager/RuleManager';
+import TypeExplorer from '@components/schema-view/TypeExplorer';
 import { AppBar, Button, CircularProgress, Tab, Tabs, TextField } from '@material-ui/core';
 import SaveIcon from '@material-ui/icons/SaveAlt';
 import IntrospectionQuery from '@queries/introspection.graphql';
 import { ErrorMessage } from '@reusable/ErrorMessage';
-import { getMutationFields, getQueryFields } from '@utils/schema-introspection';
+import { getFieldsForType, getTypes } from '@utils/schema-introspection';
 import { request } from 'graphql-request';
 import * as React from 'react';
 import { useCounter, useLocalStorage } from 'react-use';
 import { isURL } from 'validator';
-import QueryView from './schema-view/QueryView';
+
+enum RootParentType {
+  QUERY = 'Query',
+  MUTATION = 'Mutation',
+  TYPE = 'Type'
+}
 
 const getURL = (url: string) => (url.startsWith('http') ? url : `https://${url}`);
 
 const LOCALSTORAGE_SCHEMA_URL_KEY = 'SCHEMA_URL';
 
 interface ParsedSchemaIntrospection {
-  queryFields?: any;
-  mutationFields?: any;
+  queries?: any;
+  mutations?: any;
+  types?: any;
 }
 
-export default ({ config }: { config?: any }) => {
-  console.log(config);
+export default ({  }: { config?: any }) => {
   const [url, setURL] = useLocalStorage(LOCALSTORAGE_SCHEMA_URL_KEY, '');
-  const [schemaIntrospection, setSchemaIntrospection] = React.useState<ParsedSchemaIntrospection>({});
+  const [schemaIntrospection, setSchemaIntrospection] = React.useState<ParsedSchemaIntrospection>(null);
   const [error, setError] = React.useState<boolean>(false);
   const [isLoading, setLoading] = React.useState<boolean>(false);
   const [selectedViewIndex, { set }] = useCounter(0);
@@ -39,7 +45,11 @@ export default ({ config }: { config?: any }) => {
     setError(false);
     return request(getURL(url), IntrospectionQuery)
       .then((res: SchemaIntrospection) => {
-        setSchemaIntrospection({ queryFields: getQueryFields(res), mutationFields: getMutationFields(res) });
+        setSchemaIntrospection({
+          queries: getFieldsForType(res, 'Mutation'),
+          mutations: getFieldsForType(res, 'Query'),
+          types: getTypes(res)
+        });
         setLoading(false);
       })
       .catch(err => {
@@ -79,14 +89,16 @@ export default ({ config }: { config?: any }) => {
       </AppBar>
       {error && <ErrorMessage message="Error fetching schema!" />}
       {isLoading && <CircularProgress />}
-      {selectedViewIndex === 0 && schemaIntrospection.queryFields && !isLoading && (
-        <QueryView queryFields={schemaIntrospection.queryFields} />
+      {selectedViewIndex === 0 && !isLoading && schemaIntrospection && (
+        <TypeExplorer parentType={RootParentType.QUERY} fields={schemaIntrospection.queries} />
       )}
-      {selectedViewIndex === 1 && schemaIntrospection.mutationFields && !isLoading && (
-        <QueryView queryFields={schemaIntrospection.mutationFields} />
+      {selectedViewIndex === 1 && !isLoading && schemaIntrospection && (
+        <TypeExplorer parentType={RootParentType.MUTATION} fields={schemaIntrospection.mutations} />
       )}
-      {selectedViewIndex === 2 && schemaIntrospection && !isLoading && <div>Type view</div>}
-      {selectedViewIndex === 3 && <RuleManager key={4} />}
+      {selectedViewIndex === 2 && !isLoading && schemaIntrospection && (
+        <TypeExplorer parentType={RootParentType.TYPE} fields={schemaIntrospection.types} />
+      )}
+      {selectedViewIndex === 3 && <RuleManager />}
     </main>
   );
 };

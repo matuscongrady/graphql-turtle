@@ -22,6 +22,7 @@
 		"no-relative-imports": false,
 		"interface-name": false,
     "no-any": false,
+    "no-eval": false,
     "possible-timing-attack": false,
     "no-backbone-get-set-outside-model": false,
 		"react-unused-props-and-state": false,

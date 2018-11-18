@@ -10,8 +10,6 @@ import {
   ExpansionPanelActions,
   ExpansionPanelDetails,
   ExpansionPanelSummary,
-  MenuItem,
-  Select,
   TextField,
   Typography
 } from '@material-ui/core';
@@ -27,26 +25,29 @@ import { useLocalStorage } from 'react-use';
 
 const SAVED_RULES_LOCALSTORAGE_KEY = 'SAVED_RULES';
 
+const isValidJavascriptCode = (code: string): boolean => {
+  try {
+    eval(code);
+  } catch (e) {
+    if (e instanceof SyntaxError) return false;
+    return true;
+  }
+};
+
 export default () => {
   const { setTrue: openDialog, setFalse: closeDialog, value: isDialogOpen } = useBoolean(false);
   const [ruleName, setRuleName] = React.useState('');
-  const [requestorProperty, setRequestorProperty] = React.useState('');
-  const [operator, setOperator] = React.useState('==');
-  const [value, setValue] = React.useState('');
+  const [ruleDefinition, setRuleDefinition] = React.useState('');
   const [rules, saveRules] = useLocalStorage(SAVED_RULES_LOCALSTORAGE_KEY, '');
-  const savedRules = JSON.parse(rules || '{}');
+  const savedRules = JSON.parse(rules || '[]');
 
-  function handleOperatorChange(e) {
-    setOperator(e.target.value);
-  }
   function createNewRule() {
-    savedRules[ruleName] = { requestorProperty, operator, value };
+    savedRules.push({ ruleDefinition, name: ruleName });
     saveRules(JSON.stringify(savedRules));
-    setOperator('==');
-    setRequestorProperty('');
-    setValue('');
     closeDialog();
   }
+
+  const isValidCode = isValidJavascriptCode(ruleDefinition);
 
   return (
     <div>
@@ -63,16 +64,16 @@ export default () => {
         &nbsp;Create new rule
       </Button>
       <div style={{ paddingTop: '15px' }}>
-        {Object.keys(savedRules).map(rn => (
-          <ExpansionPanel key={rn}>
+        {savedRules.map(rule => (
+          <ExpansionPanel key={rule.name}>
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography>{rn}</Typography>
+              <Typography>{rule.name}</Typography>
             </ExpansionPanelSummary>
             <Divider />
             <ExpansionPanelDetails>
-              <SyntaxHighlighter language="javascript" style={prism}>{`${savedRules[rn].requestorProperty} ${
-                savedRules[rn].operator
-              } ${savedRules[rn].value}`}</SyntaxHighlighter>
+              <SyntaxHighlighter language="javascript" style={prism}>
+                {rule.ruleDefinition}
+              </SyntaxHighlighter>
             </ExpansionPanelDetails>
             <ExpansionPanelActions>
               <Button variant="fab" color="primary" aria-label="Add">
@@ -103,35 +104,17 @@ export default () => {
           />
           <div style={{ marginTop: '25px' }}>
             <Typography variant="h6" color="inherit" noWrap>
-              Rule definition
+              Rule definition - must be a valid ES6 javascript syntax
             </Typography>
             <TextField
               autoFocus
-              value={requestorProperty}
+              error={!isValidCode}
+              value={ruleDefinition}
               margin="dense"
-              id="requestor-property"
-              label="Requestor object property"
+              label="Rule definition"
               type="string"
               fullWidth
-              onChange={e => setRequestorProperty(e.target.value)}
-            />
-            <Select style={{ marginTop: '15px' }} value={operator} onChange={handleOperatorChange}>
-              <MenuItem value=">">{'>'}</MenuItem>
-              <MenuItem value="<">{'<'}</MenuItem>
-              <MenuItem value=">=">{'>='}</MenuItem>
-              <MenuItem value="<=">{'<='}</MenuItem>
-              <MenuItem value="==">{'=='}</MenuItem>
-              <MenuItem value="!==">{'!=='}</MenuItem>
-            </Select>
-            <TextField
-              value={value}
-              onChange={e => setValue(e.target.value)}
-              autoFocus
-              margin="dense"
-              id="value"
-              label="Value"
-              type="string"
-              fullWidth
+              onChange={e => setRuleDefinition(e.target.value)}
             />
           </div>
         </DialogContent>
@@ -139,12 +122,7 @@ export default () => {
           <Button onClick={closeDialog} color="primary">
             Cancel
           </Button>
-          <Button
-            disabled={!requestorProperty || !ruleName || !value}
-            onClick={createNewRule}
-            variant="contained"
-            color="primary"
-          >
+          <Button disabled={!ruleName || !isValidCode} onClick={createNewRule} variant="contained" color="primary">
             Create rule
           </Button>
         </DialogActions>

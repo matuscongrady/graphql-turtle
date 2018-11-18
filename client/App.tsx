@@ -8,6 +8,10 @@ import { CONFIG_URL } from './contants';
 
 setConfig({ pureSFC: true } as any);
 
+const exampleConfig = {
+  rules: [{ name: 'isAdmin', definition: `user.role === 'ADMIN'` }]
+};
+
 const MainAppWithExistingConfig = () => {
   const config = useFetch(CONFIG_URL);
   return (
@@ -30,7 +34,7 @@ const App = () => {
         </Toolbar>
       </AppBar>
       {process.env.IS_CREATE_MODE ? (
-        <MainView />
+        <MainView config={exampleConfig} />
       ) : (
         <React.Suspense fallback={<CircularProgress />}>
           <MainAppWithExistingConfig />

@@ -18,15 +18,30 @@ declare module '*.jpg' {
   export default value;
 }
 
+enum RootParentType {
+  QUERY = 'Query',
+  MUTATION = 'Mutation',
+  TYPE = 'Type'
+}
+
 enum FieldKind {
   SCALAR = 'SCALAR',
   NON_NULL = 'NON_NULL',
   INPUT_OBJECT = 'INPUT_OBJECT',
   OBJECT = 'OBJECT',
-  LIST = 'LIST'
+  LIST = 'LIST',
+  ENUM = 'ENUM',
+  INTERFACE = 'INTERFACE'
 }
 
-interface FieldType {
+interface BaseTypeInfo {
+  name: string;
+  type: string;
+  isList: boolean;
+  isNonNull?: boolean;
+}
+
+interface SchemaFieldType {
   kind: FieldKind;
   name?: string;
   ofType?: FieldType;
@@ -37,10 +52,11 @@ interface SchemaIntrospection {
     types: {
       fields?: {
         name: string;
+        description: string;
         type: FieldType;
       }[];
-      kind: string;
       name: string;
+      kind: FieldKind;
       possibleTypes?: null;
     }[];
   };
