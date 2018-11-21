@@ -1,3 +1,4 @@
+import { getUniqueTypeFieldName } from '@/utils/parsing';
 import {
   Chip,
   Divider,
@@ -26,8 +27,23 @@ const TypeChip = ({ field, width }: { field: BaseTypeInfo; width?: number }) => 
   );
 };
 
-const FieldItem = ({ field, parentType }: { field: TypeField; parentType: string }) => {
-  const count = 0;
+interface FieldItemProps extends RuleUserProps {
+  field: TypeField;
+  parentType: string;
+}
+
+const FieldItem = ({
+  field,
+  parentType,
+  allAvailableRules,
+  allActiveRulesMap,
+  setAllActiveRulesMap,
+  setAllAvailableRules
+}: FieldItemProps) => {
+  const uniqueTypeFieldName = getUniqueTypeFieldName(parentType, field.name);
+  const activeRulesForFieldCount = allActiveRulesMap[uniqueTypeFieldName]
+    ? allActiveRulesMap[uniqueTypeFieldName].length
+    : 0;
   const { value: isExpanded, toggle } = useBoolean(false);
   return (
     <>
@@ -42,7 +58,7 @@ const FieldItem = ({ field, parentType }: { field: TypeField; parentType: string
         >
           <Typography variant="subtitle1">
             {field.name}&nbsp;&nbsp;
-            <Chip style={{ height: '24px' }} label={`(${count} rules)`} />
+            <Chip style={{ height: '24px' }} label={`(${activeRulesForFieldCount} rules)`} />
             <TypeChip field={field} />
           </Typography>
         </ExpansionPanelSummary>
@@ -64,6 +80,10 @@ const FieldItem = ({ field, parentType }: { field: TypeField; parentType: string
                     <TypeChip field={nestedField} width={220} />
                     {parentType === 'Type' && (
                       <RuleManagementButton
+                        allActiveRulesMap={allActiveRulesMap}
+                        allAvailableRules={allAvailableRules}
+                        setAllActiveRulesMap={setAllActiveRulesMap}
+                        setAllAvailableRules={setAllAvailableRules}
                         parentType={nestedField.name}
                         fieldName={nestedField.name}
                         text="Manage rules"
@@ -76,7 +96,16 @@ const FieldItem = ({ field, parentType }: { field: TypeField; parentType: string
             </ExpansionPanelDetails>
             <Divider />
             <ExpansionPanelActions>
-              <RuleManagementButton fieldName={field.name} parentType={parentType} text="Manage rules" height={36} />
+              <RuleManagementButton
+                allActiveRulesMap={allActiveRulesMap}
+                allAvailableRules={allAvailableRules}
+                setAllActiveRulesMap={setAllActiveRulesMap}
+                setAllAvailableRules={setAllAvailableRules}
+                fieldName={field.name}
+                parentType={parentType}
+                text="Manage rules"
+                height={36}
+              />
             </ExpansionPanelActions>
           </div>
         )}
@@ -85,11 +114,16 @@ const FieldItem = ({ field, parentType }: { field: TypeField; parentType: string
   );
 };
 
-export default ({ fields, parentType }: { fields: TypeField[]; parentType: RootParentType }) => {
+interface TypeExplorerProps extends RuleUserProps {
+  fields: TypeField[];
+  parentType: RootParentType;
+}
+
+export default ({ fields, ...restProps }: TypeExplorerProps) => {
   return (
     <div style={{ width: '100%', marginBottom: '25px' }}>
       {fields.map(field => (
-        <FieldItem parentType={parentType} key={field.name} field={field} />
+        <FieldItem field={field} key={field.name} {...restProps} />
       ))}
     </div>
   );

@@ -1,4 +1,8 @@
-import { LOCALSTORAGE_ENDPOINT_URL_KEY } from '@/contants';
+import {
+  ACTIVE_RULES_LOCALSTORAGE_KEY,
+  AVAILABLE_RULES_LOCALSTORAGE_KEY,
+  LOCALSTORAGE_ENDPOINT_URL_KEY
+} from '@/contants';
 import { getExportDataURI, getURL } from '@/utils/parsing';
 import ImportConfig from '@components/import-config/ImportConfig';
 import RuleManager from '@components/rule-manager/RuleManager';
@@ -32,6 +36,14 @@ export default ({  }: { config?: any }) => {
   const [error, setError] = React.useState<boolean>(false);
   const [isLoading, setLoading] = React.useState<boolean>(false);
   const [selectedViewIndex, { set }] = useCounter(0);
+  const [allAvailableRules, setAllAvailableRules] = useLocalStorage<AvailableRule[]>(
+    AVAILABLE_RULES_LOCALSTORAGE_KEY,
+    []
+  );
+  const [allActiveRulesMap, setAllActiveRulesMap] = useLocalStorage<AllActiveRulesMap>(
+    ACTIVE_RULES_LOCALSTORAGE_KEY,
+    {}
+  );
 
   function selecteView(_event, value) {
     set(value);
@@ -46,8 +58,8 @@ export default ({  }: { config?: any }) => {
     return request(getURL(url), IntrospectionQuery)
       .then((res: SchemaIntrospection) => {
         setSchemaIntrospection({
-          queries: getFieldsForType(res, 'Mutation'),
-          mutations: getFieldsForType(res, 'Query'),
+          queries: getFieldsForType(res, 'Query'),
+          mutations: getFieldsForType(res, 'Mutation'),
           types: getTypes(res)
         });
         setLoading(false);
@@ -103,15 +115,43 @@ export default ({  }: { config?: any }) => {
       {error && <ErrorMessage message="Error fetching schema!" />}
       {isLoading && <CircularProgress />}
       {selectedViewIndex === 0 && !isLoading && schemaIntrospection && (
-        <TypeExplorer parentType={RootParentType.QUERY} fields={schemaIntrospection.queries} />
+        <TypeExplorer
+          allAvailableRules={allAvailableRules}
+          allActiveRulesMap={allActiveRulesMap}
+          setAllAvailableRules={setAllAvailableRules}
+          setAllActiveRulesMap={setAllActiveRulesMap}
+          parentType={RootParentType.QUERY}
+          fields={schemaIntrospection.queries}
+        />
       )}
       {selectedViewIndex === 1 && !isLoading && schemaIntrospection && (
-        <TypeExplorer parentType={RootParentType.MUTATION} fields={schemaIntrospection.mutations} />
+        <TypeExplorer
+          allAvailableRules={allAvailableRules}
+          allActiveRulesMap={allActiveRulesMap}
+          setAllAvailableRules={setAllAvailableRules}
+          setAllActiveRulesMap={setAllActiveRulesMap}
+          parentType={RootParentType.MUTATION}
+          fields={schemaIntrospection.mutations}
+        />
       )}
       {selectedViewIndex === 2 && !isLoading && schemaIntrospection && (
-        <TypeExplorer parentType={RootParentType.TYPE} fields={schemaIntrospection.types} />
+        <TypeExplorer
+          allAvailableRules={allAvailableRules}
+          allActiveRulesMap={allActiveRulesMap}
+          setAllAvailableRules={setAllAvailableRules}
+          setAllActiveRulesMap={setAllActiveRulesMap}
+          parentType={RootParentType.TYPE}
+          fields={schemaIntrospection.types}
+        />
       )}
-      {selectedViewIndex === 3 && <RuleManager />}
+      {selectedViewIndex === 3 && (
+        <RuleManager
+          allAvailableRules={allAvailableRules}
+          allActiveRulesMap={allActiveRulesMap}
+          setAllAvailableRules={setAllAvailableRules}
+          setAllActiveRulesMap={setAllActiveRulesMap}
+        />
+      )}
       {selectedViewIndex === 4 && <ImportConfig />}
     </main>
   );

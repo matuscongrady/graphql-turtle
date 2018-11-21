@@ -41,3 +41,9 @@ export const getExportDataURI = () => {
     )
   )}`;
 };
+
+export const getUniqueTypeFieldName = (parentType: string, field: string) => `${parentType}-${field}`;
+export const parseUniqueTypeFieldName = (uniqueTypeFieldName: string) => {
+  const [parentType, field] = uniqueTypeFieldName.split('-');
+  return { parentType, field };
+};

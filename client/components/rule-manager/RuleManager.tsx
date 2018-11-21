@@ -22,22 +22,38 @@ import * as React from 'react';
 import { useBoolean } from 'react-hanger';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { prism } from 'react-syntax-highlighter/dist/styles/prism';
-import { useLocalStorage } from 'react-use';
-import { AVAILABLE_RULES_LOCALSTORAGE_KEY } from '../../contants';
 
-export default () => {
+export default ({
+  setAllActiveRulesMap,
+  setAllAvailableRules,
+  allActiveRulesMap,
+  allAvailableRules
+}: RuleUserProps) => {
   const { setTrue: openDialog, setFalse: closeDialog, value: isDialogOpen } = useBoolean(false);
   const [ruleName, setRuleName] = React.useState('');
   const [ruleDefinition, setRuleDefinition] = React.useState('');
-  const [rules, saveRules] = useLocalStorage<AvailableRule[]>(AVAILABLE_RULES_LOCALSTORAGE_KEY);
 
   function createNewRule() {
-    saveRules(rules.concat({ ruleDefinition, name: ruleName }));
+    setAllAvailableRules(allAvailableRules.concat({ ruleDefinition, name: ruleName }));
+    setRuleName('');
+    setRuleDefinition('');
     closeDialog();
   }
 
   const deleteRule = (name: string) => () => {
-    saveRules(rules.filter(rule => rule.name !== name));
+    if (window.confirm('This will delete all associated active rules from all fields/types. Proceed?')) {
+      Object.keys(allActiveRulesMap).forEach(fieldName => {
+        allActiveRulesMap[fieldName] = allActiveRulesMap[fieldName].filter(r => r !== name);
+      });
+      setAllActiveRulesMap(allActiveRulesMap);
+      setAllAvailableRules(allAvailableRules.filter(rule => rule.name !== name));
+    }
+  };
+
+  const editRule = (name: string, definition: string) => () => {
+    setRuleName(name);
+    setRuleDefinition(definition);
+    openDialog();
   };
 
   const isValidCode = isValidJavascriptCode(ruleDefinition);
@@ -57,7 +73,7 @@ export default () => {
         &nbsp;Create new rule
       </Button>
       <div style={{ paddingTop: '15px' }}>
-        {rules.map(rule => (
+        {allAvailableRules.map(rule => (
           <ExpansionPanel key={rule.name}>
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
               <Typography>{rule.name}</Typography>
@@ -69,7 +85,7 @@ export default () => {
               </SyntaxHighlighter>
             </ExpansionPanelDetails>
             <ExpansionPanelActions>
-              <Button variant="fab" color="primary" aria-label="Add">
+              <Button onClick={editRule(rule.name, rule.ruleDefinition)} variant="fab" color="primary" aria-label="Add">
                 <EditIcon />
               </Button>
               <Button variant="fab" color="secondary" onClick={deleteRule(rule.name)} aria-label="Edit">
@@ -100,7 +116,7 @@ export default () => {
               Rule definition - must be a valid ES6 javascript syntax
             </Typography>
             <TextField
-              error={!isValidCode}
+              error={Boolean(ruleDefinition) && !isValidCode}
               value={ruleDefinition}
               margin="dense"
               label="Rule definition"

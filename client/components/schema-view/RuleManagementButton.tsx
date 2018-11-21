@@ -1,4 +1,4 @@
-import { ACTIVE_RULES_LOCALSTORAGE_KEY, AVAILABLE_RULES_LOCALSTORAGE_KEY } from '@/contants';
+import { getUniqueTypeFieldName } from '@/utils/parsing';
 import {
   Avatar,
   Button,
@@ -22,32 +22,36 @@ import EditIcon from '@material-ui/icons/Edit';
 import LayersIcon from '@material-ui/icons/Layers';
 import * as React from 'react';
 import { useBoolean } from 'react-hanger';
-import { useLocalStorage } from 'react-use';
 
-interface AddRuleButtonProps {
+interface AddRuleButtonProps extends RuleUserProps {
   height: number;
   text: string;
   fieldName: string;
   parentType: string;
 }
 
-export default ({ height, text, fieldName, parentType }: AddRuleButtonProps) => {
-  const uniqueTypeKey = `${parentType}_${fieldName}`;
+export default ({
+  height,
+  text,
+  fieldName,
+  parentType,
+  allAvailableRules,
+  allActiveRulesMap,
+  setAllActiveRulesMap
+}: AddRuleButtonProps) => {
+  const uniqueTypeFieldName = getUniqueTypeFieldName(parentType, fieldName);
   const { setTrue: openDialog, setFalse: closeDialog, value: isDialogOpen } = useBoolean(false);
-  const [localStorageAvailableRules] = useLocalStorage(AVAILABLE_RULES_LOCALSTORAGE_KEY, []);
-  const [localStorageActiveRules, setLocalStorageActiveRules] = useLocalStorage(ACTIVE_RULES_LOCALSTORAGE_KEY, {});
-  const activeRules: string[] = localStorageActiveRules[uniqueTypeKey] || [];
-  const availableRules: AvailableRule[] = localStorageAvailableRules.filter(
-    (rule: AvailableRule) => !activeRules.find(activeRule => activeRule === rule.name)
-  );
+  const activeRulesForField = allActiveRulesMap[uniqueTypeFieldName] || [];
+  const availableRulesForField: AvailableRule[] = allAvailableRules.filter(r => !activeRulesForField.includes(r.name));
 
   function addRule(e) {
-    localStorageActiveRules[uniqueTypeKey] = activeRules.concat(e.target.value);
-    setLocalStorageActiveRules(localStorageActiveRules);
+    setAllActiveRulesMap({ ...allActiveRulesMap, [uniqueTypeFieldName]: [...activeRulesForField, e.target.value] });
   }
   const removeRule = (ruleName: string) => () => {
-    localStorageActiveRules[uniqueTypeKey] = activeRules.filter(rule => rule !== ruleName);
-    setLocalStorageActiveRules(localStorageActiveRules);
+    setAllActiveRulesMap({
+      ...allActiveRulesMap,
+      [uniqueTypeFieldName]: activeRulesForField.filter(rule => rule !== ruleName)
+    });
   };
 
   return (
@@ -59,7 +63,7 @@ export default ({ height, text, fieldName, parentType }: AddRuleButtonProps) => 
         <DialogContent>
           <DialogContentText>You can attach any custom rule from rule-manager.</DialogContentText>
           <List dense>
-            {activeRules.map(rule => (
+            {activeRulesForField.map(rule => (
               <ListItem key={rule}>
                 <Avatar>
                   <LayersIcon />
@@ -74,9 +78,9 @@ export default ({ height, text, fieldName, parentType }: AddRuleButtonProps) => 
             ))}
           </List>
           <FormControl fullWidth>
-            <InputLabel>Attach rule ({availableRules.length} available)</InputLabel>
-            <Select disabled={availableRules.length === 0} displayEmpty value="" onChange={addRule}>
-              {availableRules.map(rule => (
+            <InputLabel>Attach rule ({availableRulesForField.length} available)</InputLabel>
+            <Select disabled={availableRulesForField.length === 0} displayEmpty value="" onChange={addRule}>
+              {availableRulesForField.map(rule => (
                 <MenuItem key={rule.name} value={rule.name}>
                   {rule.name}
                 </MenuItem>

@@ -29,8 +29,19 @@ interface AvailableRule {
   ruleDefinition: string;
 }
 
+interface RuleUserProps {
+  allAvailableRules: AvailableRule[];
+  allActiveRulesMap: AllActiveRulesMap;
+  setAllAvailableRules(allAvailableRules: AvailableRule[]);
+  setAllActiveRulesMap(allActiveRulesMap: AllActiveRulesMap);
+}
+
+interface AllActiveRulesMap {
+  [uniqeTypeFieldName: string]: string[];
+}
+
 interface ActiveRule {
-  rule: string
+  rule: string;
 }
 
 enum FieldKind {

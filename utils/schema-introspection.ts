@@ -21,7 +21,7 @@ function getTypeInfo(field): BaseTypeInfo {
 }
 
 export function getTypes(introspection: SchemaIntrospection): TypeField[] {
-  const res = introspection.__schema.types
+  return introspection.__schema.types
     .filter(type => !type.name.startsWith('__') && type.kind === 'OBJECT')
     .map(type => {
       return {
@@ -31,7 +31,6 @@ export function getTypes(introspection: SchemaIntrospection): TypeField[] {
         fields: type.fields.filter(t => t.type.kind !== 'INTERFACE').map(getTypeInfo)
       };
     });
-  return res;
 }
 
 export function getFieldsForType(introspection: SchemaIntrospection, type: string): TypeField[] {
@@ -49,7 +48,7 @@ export function getFieldsForType(introspection: SchemaIntrospection, type: strin
       if (typeInfo) {
         return {
           ...typeInfo,
-          fields: introspection.__schema.types.find(type => type.name === typeInfo.type).fields.map(getTypeInfo)
+          fields: introspection.__schema.types.find(t => t.name === typeInfo.type).fields.map(getTypeInfo)
         };
       }
     })
