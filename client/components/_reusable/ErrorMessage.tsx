@@ -5,7 +5,7 @@ import * as React from 'react';
 export function ErrorMessage({ message }: { message: string }) {
   return (
     <SnackbarContent
-      style={{ marginBottom: '10px', backgroundColor: '#d32f2f' }}
+      style={{ marginBottom: '10px', backgroundColor: '#d32f2f', width: '100%' }}
       message={
         <span style={{ alignItems: 'center', display: 'flex' }}>
           <ErrorIcon />
