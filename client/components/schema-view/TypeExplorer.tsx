@@ -18,6 +18,10 @@ import * as React from 'react';
 import { useBoolean } from 'react-hanger';
 import RuleManagementButton from './RuleManagementButton';
 
+const getRulesCount = (map: any, fieldName: string) => {
+  return map[fieldName] ? map[fieldName].length : 0;
+};
+
 const TypeChip = ({ field, width }: { field: BaseTypeInfo; width?: number }) => {
   return (
     <Chip
@@ -41,9 +45,6 @@ const FieldItem = ({
   setAllAvailableRules
 }: FieldItemProps) => {
   const uniqueTypeFieldName = getUniqueTypeFieldName(parentType, field.name);
-  const activeRulesForFieldCount = allActiveRulesMap[uniqueTypeFieldName]
-    ? allActiveRulesMap[uniqueTypeFieldName].length
-    : 0;
   const { value: isExpanded, toggle } = useBoolean(false);
   return (
     <>
@@ -58,7 +59,10 @@ const FieldItem = ({
         >
           <Typography variant="subtitle1">
             {field.name}&nbsp;&nbsp;
-            <Chip style={{ height: '24px' }} label={`(${activeRulesForFieldCount} rules)`} />
+            <Chip
+              style={{ height: '24px' }}
+              label={`(${getRulesCount(setAllActiveRulesMap, uniqueTypeFieldName)} rules)`}
+            />
             <TypeChip field={field} />
           </Typography>
         </ExpansionPanelSummary>
@@ -77,6 +81,13 @@ const FieldItem = ({
                     {nestedField.isNonNull && (
                       <Chip style={{ height: '24px', width: '80px' }} color="secondary" label="Non Null" />
                     )}
+                    <Chip
+                      style={{ height: '24px' }}
+                      label={`(${getRulesCount(
+                        allActiveRulesMap,
+                        getUniqueTypeFieldName(field.name, nestedField.name)
+                      )} rules)`}
+                    />
                     <TypeChip field={nestedField} width={220} />
                     {parentType === 'Type' && (
                       <RuleManagementButton
@@ -84,7 +95,7 @@ const FieldItem = ({
                         allAvailableRules={allAvailableRules}
                         setAllActiveRulesMap={setAllActiveRulesMap}
                         setAllAvailableRules={setAllAvailableRules}
-                        parentType={nestedField.name}
+                        parentType={field.name}
                         fieldName={nestedField.name}
                         text="Manage rules"
                         height={26}

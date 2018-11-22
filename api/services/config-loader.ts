@@ -2,7 +2,7 @@ import { readJsonSync } from 'fs-extra';
 import { resolve } from 'path';
 import { fatal } from 'signale';
 
-const isDev = process.env.NODE_ENV === 'developmentt';
+const isDev = process.env.NODE_ENV === 'development';
 
 const handleMissingConfig = (configPath: string) => {
   if (isDev) {

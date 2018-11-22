@@ -3,7 +3,11 @@ import { Button, Paper, TextField } from '@material-ui/core';
 import SaveIcon from '@material-ui/icons/Save';
 import * as React from 'react';
 
-export default () => {
+interface ImportConfigProps extends RuleUserProps {
+  setURL(url: string): void;
+}
+
+export default ({ setAllActiveRulesMap, setAllAvailableRules, setURL }: ImportConfigProps) => {
   const [config, setConfig] = React.useState('');
   const [errors, setErrors] = React.useState([]);
 
@@ -34,6 +38,17 @@ export default () => {
     setConfig(cfg);
   }
 
+  function handleImportConfig() {
+    try {
+      const parsedConfig = JSON.parse(config);
+      setAllActiveRulesMap(parsedConfig.activeRules);
+      setAllAvailableRules(parsedConfig.availableRules);
+      setURL(parsedConfig.endpointURL);
+    } catch (e) {
+      setErrors(['Error occured while importing config']);
+    }
+  }
+
   return (
     <div>
       {config && errors.length > 0 && <ErrorMessage message={errors[0]} />}
@@ -45,10 +60,18 @@ export default () => {
           value={config}
           onChange={handleConfigChange}
           fullWidth
-          rows={16}
-          rowsMax={20}
+          rows={21}
+          autoCorrect="off"
+          autoComplete="off"
+          spellCheck={false}
+          autoFocus
         />
-        <Button variant="contained" style={{ marginTop: '18px', float: 'right' }} color="primary">
+        <Button
+          variant="contained"
+          style={{ marginTop: '18px', float: 'right' }}
+          onClick={handleImportConfig}
+          color="primary"
+        >
           <SaveIcon />
           &nbsp;&nbsp; Import
         </Button>

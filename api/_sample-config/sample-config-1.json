@@ -1,3 +1,28 @@
 {
-  "schema": []
+  "endpointURL": "api.graph.cool/simple/v1/cj7j2myai03tg0194pj6cjr5d",
+  "availableRules": [
+    {
+      "ruleDefinition": "requestor.role === \"ADMIN\"",
+      "name": "isAdmin"
+    },
+    {
+      "ruleDefinition": "requestor.role === \"ADMIN\" || requestor.role === \"MEMBER\"",
+      "name": "isAdminOrMember"
+    },
+    {
+      "ruleDefinition": "requestor.email",
+      "name": "isLoggedIn"
+    }
+  ],
+  "activeRules": {
+    "AddToContractOnUserPayload-userUser": [
+      "isAdmin"
+    ],
+    "Mutation-createClient": [
+      "isAdmin"
+    ],
+    "Query-allContracts": [
+      "isAdmin"
+    ]
+  }
 }

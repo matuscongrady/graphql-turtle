@@ -14,6 +14,7 @@ import IntrospectionQuery from '@queries/introspection.graphql';
 import { ErrorMessage } from '@reusable/ErrorMessage';
 import { getFieldsForType, getTypes } from '@utils/schema-introspection';
 import { request } from 'graphql-request';
+import { uniqBy } from 'lodash';
 import * as React from 'react';
 import { useCounter, useLocalStorage } from 'react-use';
 import { isURL } from 'validator';
@@ -30,13 +31,15 @@ interface ParsedSchemaIntrospection {
   types?: any;
 }
 
-export default ({  }: { config?: any }) => {
+let isConfigSet = false;
+
+export default ({ config }: { config?: any; path?: string }) => {
   const [url, setURL] = useLocalStorage(LOCALSTORAGE_ENDPOINT_URL_KEY, '');
   const [schemaIntrospection, setSchemaIntrospection] = React.useState<ParsedSchemaIntrospection>(null);
   const [error, setError] = React.useState<boolean>(false);
   const [isLoading, setLoading] = React.useState<boolean>(false);
   const [selectedViewIndex, { set }] = useCounter(0);
-  const [allAvailableRules, setAllAvailableRules] = useLocalStorage<AvailableRule[]>(
+  const [allAvailableRules, setAllAvailableRulesLocalstorage] = useLocalStorage<AvailableRule[]>(
     AVAILABLE_RULES_LOCALSTORAGE_KEY,
     []
   );
@@ -44,6 +47,15 @@ export default ({  }: { config?: any }) => {
     ACTIVE_RULES_LOCALSTORAGE_KEY,
     {}
   );
+  if (config && !isConfigSet) {
+    isConfigSet = true;
+    setAllActiveRulesMap(config.activeRules);
+    setAllAvailableRules(config.availableRules);
+    setURL(config.endpointURL);
+  }
+  function setAllAvailableRules(rules: AvailableRule[]) {
+    setAllAvailableRulesLocalstorage(uniqBy(rules, 'name').sort());
+  }
 
   function selecteView(_event, value) {
     set(value);
@@ -71,6 +83,12 @@ export default ({  }: { config?: any }) => {
         setLoading(false);
       });
   }
+  const rulesControlProps = {
+    allAvailableRules,
+    allActiveRulesMap,
+    setAllAvailableRules,
+    setAllActiveRulesMap
+  };
 
   return (
     <main style={{ width: '80%', margin: 'auto', paddingTop: '20px' }}>
@@ -115,44 +133,21 @@ export default ({  }: { config?: any }) => {
       {error && <ErrorMessage message="Error fetching schema!" />}
       {isLoading && <CircularProgress />}
       {selectedViewIndex === 0 && !isLoading && schemaIntrospection && (
-        <TypeExplorer
-          allAvailableRules={allAvailableRules}
-          allActiveRulesMap={allActiveRulesMap}
-          setAllAvailableRules={setAllAvailableRules}
-          setAllActiveRulesMap={setAllActiveRulesMap}
-          parentType={RootParentType.QUERY}
-          fields={schemaIntrospection.queries}
-        />
+        <TypeExplorer {...rulesControlProps} parentType={RootParentType.QUERY} fields={schemaIntrospection.queries} />
       )}
       {selectedViewIndex === 1 && !isLoading && schemaIntrospection && (
         <TypeExplorer
-          allAvailableRules={allAvailableRules}
-          allActiveRulesMap={allActiveRulesMap}
-          setAllAvailableRules={setAllAvailableRules}
+          {...rulesControlProps}
           setAllActiveRulesMap={setAllActiveRulesMap}
           parentType={RootParentType.MUTATION}
           fields={schemaIntrospection.mutations}
         />
       )}
       {selectedViewIndex === 2 && !isLoading && schemaIntrospection && (
-        <TypeExplorer
-          allAvailableRules={allAvailableRules}
-          allActiveRulesMap={allActiveRulesMap}
-          setAllAvailableRules={setAllAvailableRules}
-          setAllActiveRulesMap={setAllActiveRulesMap}
-          parentType={RootParentType.TYPE}
-          fields={schemaIntrospection.types}
-        />
+        <TypeExplorer {...rulesControlProps} parentType={RootParentType.TYPE} fields={schemaIntrospection.types} />
       )}
-      {selectedViewIndex === 3 && (
-        <RuleManager
-          allAvailableRules={allAvailableRules}
-          allActiveRulesMap={allActiveRulesMap}
-          setAllAvailableRules={setAllAvailableRules}
-          setAllActiveRulesMap={setAllActiveRulesMap}
-        />
-      )}
-      {selectedViewIndex === 4 && <ImportConfig />}
+      {selectedViewIndex === 3 && <RuleManager {...rulesControlProps} />}
+      {selectedViewIndex === 4 && <ImportConfig {...rulesControlProps} setURL={setURL} />}
     </main>
   );
 };

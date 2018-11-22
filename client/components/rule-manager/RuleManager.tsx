@@ -11,6 +11,8 @@ import {
   ExpansionPanelActions,
   ExpansionPanelDetails,
   ExpansionPanelSummary,
+  FormControl,
+  FormHelperText,
   TextField,
   Typography
 } from '@material-ui/core';
@@ -21,7 +23,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import * as React from 'react';
 import { useBoolean } from 'react-hanger';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { prism } from 'react-syntax-highlighter/dist/styles/prism';
+import prism from 'react-syntax-highlighter/styles/prism';
 
 export default ({
   setAllActiveRulesMap,
@@ -32,6 +34,7 @@ export default ({
   const { setTrue: openDialog, setFalse: closeDialog, value: isDialogOpen } = useBoolean(false);
   const [ruleName, setRuleName] = React.useState('');
   const [ruleDefinition, setRuleDefinition] = React.useState('');
+  const [isEditMode, setIsEditMode] = React.useState(false);
 
   function createNewRule() {
     setAllAvailableRules(allAvailableRules.concat({ ruleDefinition, name: ruleName }));
@@ -50,25 +53,26 @@ export default ({
     }
   };
 
-  const editRule = (name: string, definition: string) => () => {
+  const openEditRuleDialog = (name: string, definition: string) => () => {
+    setIsEditMode(true);
     setRuleName(name);
     setRuleDefinition(definition);
     openDialog();
   };
 
+  function openCreateRuleDialog(event) {
+    setIsEditMode(false);
+    event.stopPropagation();
+    openDialog();
+  }
+
   const isValidCode = isValidJavascriptCode(ruleDefinition);
+  const uniqueRuleNameBrokenError =
+    !isEditMode && allAvailableRules.find(rule => rule.name === ruleName) && 'Rule with this name already exists';
 
   return (
-    <div>
-      <Button
-        onClick={e => {
-          e.stopPropagation();
-          openDialog();
-        }}
-        variant="contained"
-        color="primary"
-        aria-label="Add"
-      >
+    <div style={{ marginBottom: '20px' }}>
+      <Button onClick={openCreateRuleDialog} variant="contained" color="primary" aria-label="Add">
         <AddIcon />
         &nbsp;Create new rule
       </Button>
@@ -85,7 +89,12 @@ export default ({
               </SyntaxHighlighter>
             </ExpansionPanelDetails>
             <ExpansionPanelActions>
-              <Button onClick={editRule(rule.name, rule.ruleDefinition)} variant="fab" color="primary" aria-label="Add">
+              <Button
+                onClick={openEditRuleDialog(rule.name, rule.ruleDefinition)}
+                variant="fab"
+                color="primary"
+                aria-label="Add"
+              >
                 <EditIcon />
               </Button>
               <Button variant="fab" color="secondary" onClick={deleteRule(rule.name)} aria-label="Edit">
@@ -101,16 +110,20 @@ export default ({
           <DialogContentText>
             You can create custom authorization rules here. You can then attach them to your schema types.
           </DialogContentText>
-          <TextField
-            autoFocus
-            value={ruleName}
-            margin="dense"
-            id="name"
-            label="Rule name"
-            type="string"
-            fullWidth
-            onChange={e => setRuleName(e.target.value)}
-          />
+          <FormControl fullWidth>
+            <TextField
+              autoFocus
+              value={ruleName}
+              margin="dense"
+              id="name"
+              error={!!uniqueRuleNameBrokenError}
+              label="Rule name"
+              type="string"
+              fullWidth
+              onChange={e => setRuleName(e.target.value)}
+            />
+            <FormHelperText error>{uniqueRuleNameBrokenError}</FormHelperText>
+          </FormControl>
           <div style={{ marginTop: '25px' }}>
             <Typography variant="h6" color="inherit" noWrap>
               Rule definition - must be a valid ES6 javascript syntax
@@ -130,7 +143,12 @@ export default ({
           <Button onClick={closeDialog} color="primary">
             Cancel
           </Button>
-          <Button disabled={!ruleName || !isValidCode} onClick={createNewRule} variant="contained" color="primary">
+          <Button
+            disabled={!ruleName || !isValidCode || !!uniqueRuleNameBrokenError}
+            onClick={createNewRule}
+            variant="contained"
+            color="primary"
+          >
             Create rule
           </Button>
         </DialogActions>
