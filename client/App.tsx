@@ -1,6 +1,7 @@
 import { useConfig } from '@/utils/data-fetching';
 import { ErrorMessage } from '@components/_reusable/ErrorMessage';
 import MainView from '@components/MainView';
+import SaveChanges from '@components/save-changes/SaveChanges';
 import { AppBar, CircularProgress, CssBaseline, Toolbar, Typography } from '@material-ui/core';
 import LogoIcon from '@material-ui/icons/dns';
 import { Router } from '@reach/router';
@@ -24,12 +25,13 @@ const App = () => {
   return (
     <div>
       <CssBaseline />
-      <AppBar position="static" style={{ position: 'relative', paddingLeft: '8%' }}>
+      <AppBar position="static" style={{ position: 'relative', paddingLeft: '8%', paddingRight: '8%' }}>
         <Toolbar>
           <LogoIcon />
           <Typography variant="h5" color="inherit" noWrap style={{ paddingLeft: '15px' }}>
             GraphQL Turtle - Authorization config
           </Typography>
+          {location.pathname.includes('edit') && <SaveChanges />}
         </Toolbar>
       </AppBar>
       <Router>

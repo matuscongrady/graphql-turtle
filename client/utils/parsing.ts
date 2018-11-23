@@ -28,20 +28,17 @@ export const getActiveRules = (parentType: string, type: string, stringifiedValu
 };
 
 export const getExportDataURI = () => {
-  const endpointURL = localStorage.getItem(LOCALSTORAGE_ENDPOINT_URL_KEY);
-  return `data:text/json;charset=utf-8,${encodeURIComponent(
-    JSON.stringify(
-      {
-        endpointURL: endpointURL ? JSON.parse(endpointURL) : '',
-        availableRules: JSON.parse(localStorage.getItem(AVAILABLE_RULES_LOCALSTORAGE_KEY) || '[]'),
-        activeRules: JSON.parse(localStorage.getItem(ACTIVE_RULES_LOCALSTORAGE_KEY || '{}'))
-      },
-      null,
-      2
-    )
-  )}`;
+  return `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(getFullConfig(), null, 2))}`;
 };
 
+export const getFullConfig = () => {
+  const endpointURL = localStorage.getItem(LOCALSTORAGE_ENDPOINT_URL_KEY);
+  return {
+    endpointURL: endpointURL ? JSON.parse(endpointURL) : '',
+    availableRules: JSON.parse(localStorage.getItem(AVAILABLE_RULES_LOCALSTORAGE_KEY) || '[]'),
+    activeRules: JSON.parse(localStorage.getItem(ACTIVE_RULES_LOCALSTORAGE_KEY || '{}'))
+  };
+};
 export const getUniqueTypeFieldName = (parentType: string, field: string) => `${parentType}-${field}`;
 export const parseUniqueTypeFieldName = (uniqueTypeFieldName: string) => {
   const [parentType, field] = uniqueTypeFieldName.split('-');
