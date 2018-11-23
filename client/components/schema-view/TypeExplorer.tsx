@@ -42,7 +42,8 @@ const FieldItem = ({
   allAvailableRules,
   allActiveRulesMap,
   setAllActiveRulesMap,
-  setAllAvailableRules
+  setAllAvailableRules,
+  isViewOnlyMode
 }: FieldItemProps) => {
   const uniqueTypeFieldName = getUniqueTypeFieldName(parentType, field.name);
   const { value: isExpanded, toggle } = useBoolean(false);
@@ -89,8 +90,9 @@ const FieldItem = ({
                       )} rules)`}
                     />
                     <TypeChip field={nestedField} width={220} />
-                    {parentType === 'Type' && (
+                    {parentType === 'Type' && !isViewOnlyMode && (
                       <RuleManagementButton
+                        isViewOnlyMode
                         allActiveRulesMap={allActiveRulesMap}
                         allAvailableRules={allAvailableRules}
                         setAllActiveRulesMap={setAllActiveRulesMap}
@@ -107,16 +109,19 @@ const FieldItem = ({
             </ExpansionPanelDetails>
             <Divider />
             <ExpansionPanelActions>
-              <RuleManagementButton
-                allActiveRulesMap={allActiveRulesMap}
-                allAvailableRules={allAvailableRules}
-                setAllActiveRulesMap={setAllActiveRulesMap}
-                setAllAvailableRules={setAllAvailableRules}
-                fieldName={field.name}
-                parentType={parentType}
-                text="Manage rules"
-                height={36}
-              />
+              {!isViewOnlyMode && (
+                <RuleManagementButton
+                  isViewOnlyMode
+                  allActiveRulesMap={allActiveRulesMap}
+                  allAvailableRules={allAvailableRules}
+                  setAllActiveRulesMap={setAllActiveRulesMap}
+                  setAllAvailableRules={setAllAvailableRules}
+                  fieldName={field.name}
+                  parentType={parentType}
+                  text="Manage rules"
+                  height={36}
+                />
+              )}
             </ExpansionPanelActions>
           </div>
         )}

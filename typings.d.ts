@@ -32,6 +32,7 @@ interface AvailableRule {
 interface RuleUserProps {
   allAvailableRules: AvailableRule[];
   allActiveRulesMap: AllActiveRulesMap;
+  isViewOnlyMode: boolean;
   setAllAvailableRules(allAvailableRules: AvailableRule[]);
   setAllActiveRulesMap(allActiveRulesMap: AllActiveRulesMap);
 }

@@ -9,13 +9,13 @@ import { hot, setConfig as setHotLoaderConfig } from 'react-hot-loader';
 
 setHotLoaderConfig({ pureSFC: true } as any);
 
-const MainViewInEditMode = (_props: any) => {
+const MainViewWithConfigPrefetch = ({ isViewOnlyMode }: any) => {
   const { loading, error, config } = useConfig();
   return (
     <>
       {loading && <CircularProgress />}
       {error && <ErrorMessage message="Error fetching config" />}
-      {config && <MainView config={config} />}
+      {config && <MainView isViewOnlyMode={isViewOnlyMode || false} config={config} />}
     </>
   );
 };
@@ -33,9 +33,9 @@ const App = () => {
         </Toolbar>
       </AppBar>
       <Router>
-        <MainView path="/" />
-        <MainView path="/create" />
-        <MainViewInEditMode path="/edit" />
+        <MainViewWithConfigPrefetch isViewOnlyMode path="/" />
+        <MainView isViewOnlyMode={false} path="/create" />
+        <MainViewWithConfigPrefetch path="/edit" />
       </Router>
     </div>
   );

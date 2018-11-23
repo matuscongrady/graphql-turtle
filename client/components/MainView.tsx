@@ -33,7 +33,7 @@ interface ParsedSchemaIntrospection {
 
 let isConfigSet = false;
 
-export default ({ config }: { config?: any; path?: string }) => {
+export default ({ config, isViewOnlyMode }: { config?: any; path?: string; isViewOnlyMode: boolean }) => {
   const [url, setURL] = useLocalStorage(LOCALSTORAGE_ENDPOINT_URL_KEY, '');
   const [schemaIntrospection, setSchemaIntrospection] = React.useState<ParsedSchemaIntrospection>(null);
   const [error, setError] = React.useState<boolean>(false);
@@ -52,6 +52,7 @@ export default ({ config }: { config?: any; path?: string }) => {
     setAllActiveRulesMap(config.activeRules);
     setAllAvailableRules(config.availableRules);
     setURL(config.endpointURL);
+    downloadSchemaIntrospection();
   }
   function setAllAvailableRules(rules: AvailableRule[]) {
     setAllAvailableRulesLocalstorage(uniqBy(rules, 'name').sort());
@@ -64,7 +65,7 @@ export default ({ config }: { config?: any; path?: string }) => {
     setURL(value);
   }
 
-  function downloadSchema() {
+  function downloadSchemaIntrospection() {
     setLoading(true);
     setError(false);
     return request(getURL(url), IntrospectionQuery)
@@ -87,11 +88,15 @@ export default ({ config }: { config?: any; path?: string }) => {
     allAvailableRules,
     allActiveRulesMap,
     setAllAvailableRules,
-    setAllActiveRulesMap
+    setAllActiveRulesMap,
+    isViewOnlyMode
   };
 
   return (
     <main style={{ width: '80%', margin: 'auto', paddingTop: '20px' }}>
+      {!isLoading && !error && !schemaIntrospection && (
+        <p>Download schema introspection to start working with your config</p>
+      )}
       <TextField
         id="outlined-name"
         label="Schema URL"
@@ -100,7 +105,7 @@ export default ({ config }: { config?: any; path?: string }) => {
         onChange={handleURLChange}
         margin="normal"
       />
-      <Button disabled={!isURL(getURL(url))} onClick={downloadSchema} variant="contained" color="primary">
+      <Button disabled={!isURL(getURL(url))} onClick={downloadSchemaIntrospection} variant="contained" color="primary">
         <SaveIcon />
         &nbsp; Download introspection
       </Button>
@@ -127,7 +132,7 @@ export default ({ config }: { config?: any; path?: string }) => {
           <Tab label="Mutation rules" />
           <Tab label="Per-Type rules" />
           <Tab label="Rule manager" />
-          <Tab label="Import config" />
+          {!isViewOnlyMode && <Tab label="Import config" />}
         </Tabs>
       </AppBar>
       {error && <ErrorMessage message="Error fetching schema!" />}
