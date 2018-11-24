@@ -5,6 +5,7 @@ import {
 } from '@/contants';
 import { getExportDataURI, getURL } from '@/utils/parsing';
 import ImportConfig from '@components/import-config/ImportConfig';
+import Playground from '@components/playground/Playground';
 import RuleManager from '@components/rule-manager/RuleManager';
 import TypeExplorer from '@components/schema-view/TypeExplorer';
 import { AppBar, Button, CircularProgress, Tab, Tabs, TextField } from '@material-ui/core';
@@ -122,9 +123,7 @@ export default ({ config, isViewOnlyMode }: { config?: any; path?: string; isVie
         </Button>
       </div>
       <p>
-        You can use:
-        <br />
-        <u>api.graph.cool/simple/v1/cj7j2myai03tg0194pj6cjr5d</u>
+        <u>You can use: api.graph.cool/simple/v1/cj7j2myai03tg0194pj6cjr5d</u>
       </p>
       <AppBar style={{ marginBottom: '20px' }} position="static" color="default">
         <Tabs value={selectedViewIndex} onChange={selecteView} indicatorColor="primary" textColor="primary" fullWidth>
@@ -132,6 +131,7 @@ export default ({ config, isViewOnlyMode }: { config?: any; path?: string; isVie
           <Tab label="Mutation rules" />
           <Tab label="Per-Type rules" />
           <Tab label="Rule manager" />
+          <Tab label="Playground" />
           {!isViewOnlyMode && <Tab label="Import config" />}
         </Tabs>
       </AppBar>
@@ -152,7 +152,8 @@ export default ({ config, isViewOnlyMode }: { config?: any; path?: string; isVie
         <TypeExplorer {...rulesControlProps} parentType={RootParentType.TYPE} fields={schemaIntrospection.types} />
       )}
       {selectedViewIndex === 3 && <RuleManager {...rulesControlProps} />}
-      {selectedViewIndex === 4 && <ImportConfig {...rulesControlProps} setURL={setURL} />}
+      {selectedViewIndex === 4 && <Playground {...rulesControlProps} />}
+      {selectedViewIndex === 5 && <ImportConfig {...rulesControlProps} setURL={setURL} />}
     </main>
   );
 };

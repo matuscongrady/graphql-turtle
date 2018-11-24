@@ -1,9 +1,13 @@
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as express from 'express';
+import { request } from 'graphql-request';
+import { buildClientSchema } from 'graphql/utilities/buildClientSchema';
+import { introspectionQuery } from 'graphql/utilities/introspectionQuery';
 import * as logger from 'morgan';
 import { join } from 'path';
 import { error, info } from 'signale';
+import { setSchema } from './services/config-repository';
 import { turtleRouter } from './turtle';
 
 const app = express();
@@ -22,4 +26,11 @@ app.use((err, _req, res, _next) => {
   error(err);
 });
 
-app.listen(port, () => info(`GraphQL turtle is listening on port ${port}`));
+request(process.env.GRAPH_API_URL, introspectionQuery)
+  .then(introspection => {
+    setSchema(buildClientSchema(introspection));
+    app.listen(port, () => info(`GraphQL turtle is listening on port ${port}`));
+  })
+  .catch(err => {
+    error(`Unable to load schema from ${process.env.GRAPH_API_URL}`, err);
+  });

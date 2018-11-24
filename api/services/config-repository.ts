@@ -15,15 +15,21 @@ const handleMissingConfig = (configPath: string) => {
   process.exit(1);
 };
 
-let config;
-
 export const getTurtleConfig = () => {
-  if (config) return config;
   const configPath = isDev ? resolve('api', process.env.CONFIG_PATH) : resolve('turtle-config.json');
   try {
-    config = readJsonSync(configPath);
+    return readJsonSync(configPath);
   } catch (e) {
     handleMissingConfig(configPath);
   }
-  return config;
+};
+
+export const appConfig = { config: getTurtleConfig(), schema: null };
+
+export const setConfig = config => {
+  appConfig.config = config;
+};
+
+export const setSchema = schema => {
+  appConfig.schema = schema;
 };
