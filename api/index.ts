@@ -8,7 +8,7 @@ import * as logger from 'morgan';
 import { join } from 'path';
 import { error, info } from 'signale';
 import { setSchema } from './services/config-repository';
-import { turtleRouter } from './turtle';
+import { turtleRouter } from './turtle/router';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -27,7 +27,7 @@ app.use((err, _req, res, _next) => {
 });
 
 request(process.env.GRAPH_API_URL, introspectionQuery)
-  .then(introspection => {
+  .then((introspection: any) => {
     setSchema(buildClientSchema(introspection));
     app.listen(port, () => info(`GraphQL turtle is listening on port ${port}`));
   })

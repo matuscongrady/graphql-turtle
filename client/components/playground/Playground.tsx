@@ -4,10 +4,11 @@ import { Button, Grid, Paper, SnackbarContent, TextField } from '@material-ui/co
 import DoneIcon from '@material-ui/icons/Done';
 import SendIcon from '@material-ui/icons/Send';
 import * as React from 'react';
+import { useLocalStorage } from 'react-use';
 
 export default ({  }: RuleUserProps) => {
-  const [query, setQuery] = React.useState('');
-  const [requestor, setRequetor] = React.useState('');
+  const [query, setQuery] = useLocalStorage('');
+  const [requestor, setRequetor] = useLocalStorage('');
   const [response, setResponse] = React.useState('');
   const [error, setError] = React.useState<string>(null);
   const [isLoading, setLoading] = React.useState<boolean>(false);
@@ -94,7 +95,6 @@ export default ({  }: RuleUserProps) => {
               autoCorrect="off"
               autoComplete="off"
               spellCheck={false}
-              autoFocus
             />
           </Grid>
         </Grid>

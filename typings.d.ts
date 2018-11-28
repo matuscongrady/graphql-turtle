@@ -18,6 +18,12 @@ declare module '*.jpg' {
   export default value;
 }
 
+interface TurtleConfig {
+  endpointURL: string;
+  availableRules: AvailableRule[];
+  activeRules: AllActiveRulesMap
+}
+
 enum RootParentType {
   QUERY = 'Query',
   MUTATION = 'Mutation',

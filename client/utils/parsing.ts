@@ -31,7 +31,7 @@ export const getExportDataURI = () => {
   return `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(getFullConfig(), null, 2))}`;
 };
 
-export const getFullConfig = () => {
+export const getFullConfig = (): TurtleConfig => {
   const endpointURL = localStorage.getItem(LOCALSTORAGE_ENDPOINT_URL_KEY);
   return {
     endpointURL: endpointURL ? JSON.parse(endpointURL) : '',

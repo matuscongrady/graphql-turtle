@@ -77,7 +77,7 @@ export default () => {
       </Dialog>
       <Button
         onClick={openDialog}
-        style={{ marginLeft: 'auto', color: 'white' }}
+        style={{ marginLeft: 'auto', color: 'white', borderColor: 'white' }}
         variant="outlined"
         color="default"
         aria-label="Add"

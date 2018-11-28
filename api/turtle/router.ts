@@ -1,7 +1,9 @@
 import { Router } from 'express';
+import gql from 'graphql-tag';
 import { parse } from 'graphql/language';
 import { validate } from 'graphql/validation';
 import { appConfig, setConfig } from '../services/config-repository';
+import { authorize } from './authorize';
 
 export const turtleRouter = Router();
 
@@ -17,13 +19,15 @@ turtleRouter.get('/config', (_req, res) => {
 });
 
 turtleRouter.post('/check', (req, res) => {
-  const { requestor, query } = req.body;
+  const { requestor: requestorJSON, query } = req.body;
+
   try {
     const validationErrors = validate(appConfig.schema, parse(query));
     if (validationErrors.length) {
       return res.json({ error: true, message: validationErrors[0].message });
     }
-    res.json(appConfig.config);
+    const requestor = JSON.parse(requestorJSON);
+    return res.json({ isAuthorized: authorize(gql(query), requestor, appConfig.config) });
   } catch (e) {
     return res.json({ error: true, message: 'Error validating query' });
   }
