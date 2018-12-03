@@ -1,7 +1,7 @@
 import {
   ACTIVE_RULES_LOCALSTORAGE_KEY,
   AVAILABLE_RULES_LOCALSTORAGE_KEY,
-  LOCALSTORAGE_ENDPOINT_URL_KEY
+  SCHEMA_URL_LOCALSTORAGE_KEY
 } from '@/contants';
 import { getExportDataURI, getURL } from '@/utils/parsing';
 import ImportConfig from '@components/import-config/ImportConfig';
@@ -35,7 +35,7 @@ interface ParsedSchemaIntrospection {
 let isConfigSet = false;
 
 export default ({ config, isViewOnlyMode }: { config?: any; path?: string; isViewOnlyMode: boolean }) => {
-  const [url, setURL] = useLocalStorage(LOCALSTORAGE_ENDPOINT_URL_KEY, '');
+  const [url, setURL] = useLocalStorage(SCHEMA_URL_LOCALSTORAGE_KEY, '');
   const [schemaIntrospection, setSchemaIntrospection] = React.useState<ParsedSchemaIntrospection>(null);
   const [error, setError] = React.useState<boolean>(false);
   const [isLoading, setLoading] = React.useState<boolean>(false);
@@ -53,7 +53,7 @@ export default ({ config, isViewOnlyMode }: { config?: any; path?: string; isVie
     setAllActiveRulesMap(config.activeRules);
     setAllAvailableRules(config.availableRules);
     setURL(config.endpointURL);
-    downloadSchemaIntrospection();
+    downloadSchemaIntrospection(config.endpointURL);
   }
   function setAllAvailableRules(rules: AvailableRule[]) {
     setAllAvailableRulesLocalstorage(uniqBy(rules, 'name').sort());
@@ -66,10 +66,10 @@ export default ({ config, isViewOnlyMode }: { config?: any; path?: string; isVie
     setURL(value);
   }
 
-  function downloadSchemaIntrospection() {
+  function downloadSchemaIntrospection(presetURL?: string) {
     setLoading(true);
     setError(false);
-    return request(getURL(url), IntrospectionQuery)
+    return request(getURL(presetURL || url), IntrospectionQuery)
       .then((res: SchemaIntrospection) => {
         setSchemaIntrospection({
           queries: getFieldsForType(res, 'Query'),
@@ -106,11 +106,18 @@ export default ({ config, isViewOnlyMode }: { config?: any; path?: string; isVie
         onChange={handleURLChange}
         margin="normal"
       />
-      <Button disabled={!isURL(getURL(url))} onClick={downloadSchemaIntrospection} variant="contained" color="primary">
-        <SaveIcon />
-        &nbsp; Download introspection
-      </Button>
-      <div>
+      <div style={{ marginBottom: '14px', marginTop: '4px' }}>
+        <Button
+          disabled={!isURL(getURL(url))}
+          onClick={() => {
+            downloadSchemaIntrospection();
+          }}
+          variant="contained"
+          color="primary"
+        >
+          <SaveIcon />
+          &nbsp; Download introspection
+        </Button>
         <Button
           style={{ float: 'right' }}
           variant="contained"
@@ -122,10 +129,7 @@ export default ({ config, isViewOnlyMode }: { config?: any; path?: string; isVie
           &nbsp; Export config
         </Button>
       </div>
-      <p>
-        <u>You can use: api.graph.cool/simple/v1/cj7j2myai03tg0194pj6cjr5d</u>
-      </p>
-      <AppBar style={{ marginBottom: '20px' }} position="static" color="default">
+      <AppBar style={{ marginBottom: '14px' }} position="static" color="default">
         <Tabs value={selectedViewIndex} onChange={selecteView} indicatorColor="primary" textColor="primary" fullWidth>
           <Tab label="Query rules" />
           <Tab label="Mutation rules" />

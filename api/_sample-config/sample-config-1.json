@@ -23,6 +23,9 @@
     ],
     "Query-allContracts": [
       "isAdmin"
+    ],
+    "Product-name": [
+      "isAdmin"
     ]
   }
 }

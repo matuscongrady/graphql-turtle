@@ -2,7 +2,7 @@ import { SnackbarContent } from '@material-ui/core';
 import ErrorIcon from '@material-ui/icons/Error';
 import * as React from 'react';
 
-export function ErrorMessage({ message }: { message: string }) {
+export function ErrorMessage({ message, style }: { message: string; style?: any }) {
   return (
     <SnackbarContent
       style={{
@@ -10,7 +10,9 @@ export function ErrorMessage({ message }: { message: string }) {
         backgroundColor: '#d32f2f',
         width: '100%',
         maxWidth: 'initial',
-        padding: '2px 18px'
+        height: '52px',
+        padding: '0px 18px',
+        ...style
       }}
       message={
         <span style={{ alignItems: 'center', display: 'flex' }}>

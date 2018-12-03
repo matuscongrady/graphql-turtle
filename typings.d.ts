@@ -33,6 +33,7 @@ enum RootParentType {
 interface AvailableRule {
   name: string;
   ruleDefinition: string;
+  cacheValidity: number;
 }
 
 interface RuleUserProps {

@@ -18,6 +18,7 @@
 		"missing-jsdoc": false,
     "typedef": false,
     "function-name": false,
+    "no-null-keyword": false,
     "no-reserved-keywords": false,
 		"no-relative-imports": false,
 		"interface-name": false,

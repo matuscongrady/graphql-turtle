@@ -1,7 +1,7 @@
 import {
   ACTIVE_RULES_LOCALSTORAGE_KEY,
   AVAILABLE_RULES_LOCALSTORAGE_KEY,
-  LOCALSTORAGE_ENDPOINT_URL_KEY
+  SCHEMA_URL_LOCALSTORAGE_KEY
 } from '@/contants';
 
 export const isValidJavascriptCode = (code: string): boolean => {
@@ -13,7 +13,7 @@ export const isValidJavascriptCode = (code: string): boolean => {
   }
 };
 
-export const getURL = (url: string) => (url.startsWith('http') ? url : `https://${url}`);
+export const getURL = (url: string) => (url.startsWith('http') || url.startsWith('https') ? url : `https://${url}`);
 
 export const getActiveRuleMap = (
   stringifiedValues
@@ -32,7 +32,7 @@ export const getExportDataURI = () => {
 };
 
 export const getFullConfig = (): TurtleConfig => {
-  const endpointURL = localStorage.getItem(LOCALSTORAGE_ENDPOINT_URL_KEY);
+  const endpointURL = localStorage.getItem(SCHEMA_URL_LOCALSTORAGE_KEY);
   return {
     endpointURL: endpointURL ? JSON.parse(endpointURL) : '',
     availableRules: JSON.parse(localStorage.getItem(AVAILABLE_RULES_LOCALSTORAGE_KEY) || '[]'),

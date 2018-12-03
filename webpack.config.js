@@ -7,6 +7,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const envConfig = require('./client/.env.js');
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 const isDev = process.env.NODE_ENV === 'development';
 const port = process.env.PORT || 3000;
@@ -16,6 +17,10 @@ const config = {
   mode: isDev ? 'development' : 'production',
   module: {
     rules: [
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader']
+      },
       {
         test: /\.mjs$/,
         include: /node_modules/,
@@ -71,6 +76,7 @@ const config = {
     hints: false
   },
   plugins: [
+    new MonacoWebpackPlugin(),
     new ProgressBarPlugin(),
     new FaviconsWebpackPlugin('./client/static/graphql-turtle.png'),
     new webpack.HotModuleReplacementPlugin(),

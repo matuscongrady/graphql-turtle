@@ -22,7 +22,12 @@ function getTypeInfo(field): BaseTypeInfo {
 
 export function getTypes(introspection: SchemaIntrospection): TypeField[] {
   return introspection.__schema.types
-    .filter(type => !type.name.startsWith('__') && type.kind === 'OBJECT')
+    .filter(
+      type =>
+        !type.name.startsWith('__') &&
+        !['Query', 'Mutation', 'Subscription'].includes(type.name) &&
+        type.kind === 'OBJECT'
+    )
     .map(type => {
       return {
         name: type.name,

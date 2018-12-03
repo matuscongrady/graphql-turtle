@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Fab,
   FormControl,
   IconButton,
   InputLabel,
@@ -54,6 +55,8 @@ export default ({
     });
   };
 
+  const isAllRulesUsed = availableRulesForField.length === 0;
+
   return (
     <>
       <Dialog open={isDialogOpen} onClose={closeDialog} aria-labelledby="form-dialog-title">
@@ -79,7 +82,7 @@ export default ({
           </List>
           <FormControl fullWidth>
             <InputLabel>Attach rule ({availableRulesForField.length} available)</InputLabel>
-            <Select disabled={availableRulesForField.length === 0} displayEmpty value="" onChange={addRule}>
+            <Select disabled={isAllRulesUsed} displayEmpty value="" onChange={addRule}>
               {availableRulesForField.map(rule => (
                 <MenuItem key={rule.name} value={rule.name}>
                   {rule.name}
@@ -94,18 +97,17 @@ export default ({
           </Button>
         </DialogActions>
       </Dialog>
-      <Button
+      <Fab
         style={{ height: `${height}px`, minHeight: `${height}px` }}
         onClick={e => {
           openDialog();
           e.stopPropagation();
         }}
-        variant="extendedFab"
         aria-label="Add"
       >
         <EditIcon />
         &nbsp;{text}
-      </Button>
+      </Fab>
     </>
   );
 };

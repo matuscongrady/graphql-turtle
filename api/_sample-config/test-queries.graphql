@@ -1,0 +1,25 @@
+mutation {
+  createClient(
+    city: "Hello"
+    dateOfBirth: "2018-11-29T10:57:36.522Z"
+    name: "asd"
+    surname: "asdasd"
+    pin: "asdasd"
+    zip: "asdasd"
+  ) {
+    id
+  }
+}
+
+query {
+	allClients {
+    name
+    contracts {
+      id
+      description
+      product {
+        name
+      }
+    }
+  }
+}

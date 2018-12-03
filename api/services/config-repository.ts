@@ -1,6 +1,8 @@
 import { readJsonSync } from 'fs-extra';
+import { GraphQLResolveInfo, GraphQLSchema } from 'graphql';
 import { resolve } from 'path';
 import { fatal } from 'signale';
+import { TypeField } from '../../utils/schema-introspection';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -24,7 +26,21 @@ export const getTurtleConfig = () => {
   }
 };
 
-export const appConfig = { config: getTurtleConfig(), schema: null };
+interface AppConfig {
+  config: TurtleConfig;
+  schema?: GraphQLSchema;
+  resolveInfo: GraphQLResolveInfo;
+  introspection: SchemaIntrospection;
+  types: TypeField[];
+}
+
+export const appConfig: AppConfig = {
+  config: getTurtleConfig(),
+  schema: null,
+  resolveInfo: null,
+  introspection: null,
+  types: []
+};
 
 export const setConfig = config => {
   appConfig.config = config;
@@ -32,4 +48,16 @@ export const setConfig = config => {
 
 export const setSchema = schema => {
   appConfig.schema = schema;
+};
+
+export const setTypes = types => {
+  appConfig.types = types;
+};
+
+export const setResolveInfo = resolveInfo => {
+  appConfig.resolveInfo = resolveInfo;
+};
+
+export const setSchemaIntrospection = introspection => {
+  appConfig.introspection = introspection;
 };

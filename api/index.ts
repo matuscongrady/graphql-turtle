@@ -2,12 +2,14 @@ import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as express from 'express';
 import { request } from 'graphql-request';
+import { addSchemaLevelResolveFunction } from 'graphql-tools';
 import { buildClientSchema } from 'graphql/utilities/buildClientSchema';
 import { introspectionQuery } from 'graphql/utilities/introspectionQuery';
 import * as logger from 'morgan';
-import { join } from 'path';
+import { join, resolve } from 'path';
 import { error, info } from 'signale';
-import { setSchema } from './services/config-repository';
+import { getTypes } from '../utils/schema-introspection';
+import { setResolveInfo, setSchema, setSchemaIntrospection, setTypes } from './services/config-repository';
 import { turtleRouter } from './turtle/router';
 
 const app = express();
@@ -26,9 +28,19 @@ app.use((err, _req, res, _next) => {
   error(err);
 });
 
+app.get('*', (_request, response) => {
+  response.sendFile(resolve(__dirname, '../dist-client/index.html'));
+});
+
 request(process.env.GRAPH_API_URL, introspectionQuery)
   .then((introspection: any) => {
-    setSchema(buildClientSchema(introspection));
+    const schema = buildClientSchema(introspection);
+    addSchemaLevelResolveFunction(schema, (_p1, _p2, _p3, resolveInfo) => {
+      setResolveInfo(resolveInfo);
+    });
+    setSchemaIntrospection(introspection);
+    setTypes(getTypes(introspection));
+    setSchema(schema);
     app.listen(port, () => info(`GraphQL turtle is listening on port ${port}`));
   })
   .catch(err => {

@@ -1,7 +1,8 @@
 import { ErrorMessage } from '@components/_reusable/ErrorMessage';
-import { Button, Paper, TextField } from '@material-ui/core';
+import { Button, Paper } from '@material-ui/core';
 import SaveIcon from '@material-ui/icons/Save';
 import * as React from 'react';
+import MonacoEditor from 'react-monaco-editor';
 
 interface ImportConfigProps extends RuleUserProps {
   setURL(url: string): void;
@@ -11,31 +12,27 @@ export default ({ setAllActiveRulesMap, setAllAvailableRules, setURL }: ImportCo
   const [config, setConfig] = React.useState('');
   const [errors, setErrors] = React.useState([]);
 
-  function handleConfigChange(e) {
-    const cfg = e.target.value;
-    let parsedConfig;
+  function handleConfigChange(stringConfig) {
+    let cfg;
     try {
-      parsedConfig = JSON.parse(cfg);
+      cfg = JSON.parse(stringConfig);
     } catch (e) {
-      setConfig(cfg);
-      return setErrors(['Invalid json!']);
+      setErrors(['Invalid JSON']);
+      setConfig(stringConfig);
+      return;
     }
     const validationErrors = [];
-    if (typeof parsedConfig.endpointURL !== 'string' || !parsedConfig.endpointURL) {
+    if (typeof cfg.endpointURL !== 'string' || !cfg.endpointURL) {
       validationErrors.push('endpointURL must be a non-empty string');
     }
-    if (typeof parsedConfig.activeRules !== 'object' || Array.isArray(parsedConfig.activeRules)) {
+    if (typeof cfg.activeRules !== 'object' || Array.isArray(cfg.activeRules)) {
       validationErrors.push('activeRules must be an object');
     }
-    if (!Array.isArray(parsedConfig.availableRules)) {
+    if (!Array.isArray(cfg.availableRules)) {
       validationErrors.push('available rules must be an array');
     }
-    if (validationErrors.length) {
-      setErrors(validationErrors);
-    } else {
-      setErrors([]);
-    }
-    setConfig(cfg);
+    setErrors(validationErrors);
+    setConfig(stringConfig);
   }
 
   function handleImportConfig() {
@@ -49,33 +46,40 @@ export default ({ setAllActiveRulesMap, setAllAvailableRules, setURL }: ImportCo
     }
   }
 
+  const isAbleToImport = Boolean(config && !errors.length);
+
   return (
     <div>
-      {config && errors.length > 0 && <ErrorMessage message={errors[0]} />}
-      <Paper>
-        <TextField
-          style={{ marginTop: '18px', padding: '0px 12px 8px 12px' }}
-          placeholder="Enter your pre-defined graphql-turtle configuration here."
-          multiline={true}
+      <Paper style={{ maxHeight: '580px', padding: '10px 14px 6px 0px' }}>
+        <MonacoEditor
+          height="420"
+          options={{
+            minimap: { enabled: false },
+            fontSize: 14,
+            formatOnPaste: true,
+            occurrencesHighlight: false,
+            scrollBeyondLastColumn: 0,
+            scrollBeyondLastLine: false
+          }}
+          language="json"
+          theme="vs"
           value={config}
           onChange={handleConfigChange}
-          fullWidth
-          rows={21}
-          autoCorrect="off"
-          autoComplete="off"
-          spellCheck={false}
-          autoFocus
         />
-        <Button
-          variant="contained"
-          style={{ marginTop: '18px', float: 'right' }}
-          onClick={handleImportConfig}
-          color="primary"
-        >
-          <SaveIcon />
-          &nbsp;&nbsp; Import
-        </Button>
       </Paper>
+      {config && errors.length > 0 && (
+        <ErrorMessage style={{ marginTop: '11px', marginBottom: '0px' }} message={errors[0]} />
+      )}
+      <Button
+        variant="contained"
+        style={{ marginTop: '11px', float: 'right' }}
+        onClick={handleImportConfig}
+        color="primary"
+        disabled={!isAbleToImport}
+      >
+        <SaveIcon />
+        &nbsp;&nbsp; Import
+      </Button>
     </div>
   );
 };
