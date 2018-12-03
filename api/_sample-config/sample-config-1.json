@@ -3,29 +3,24 @@
   "availableRules": [
     {
       "ruleDefinition": "requestor.role === \"ADMIN\"",
-      "name": "isAdmin"
+      "name": "isAdmins",
+      "cacheValidity": 0
     },
     {
       "ruleDefinition": "requestor.role === \"ADMIN\" || requestor.role === \"MEMBER\"",
-      "name": "isAdminOrMember"
+      "name": "isAdminOrMember",
+      "cacheValidity": 0
     },
     {
       "ruleDefinition": "requestor.email",
-      "name": "isLoggedIn"
+      "name": "isLoggedIn",
+      "cacheValidity": 0
     }
   ],
   "activeRules": {
-    "AddToContractOnUserPayload-userUser": [
-      "isAdmin"
-    ],
-    "Mutation-createClient": [
-      "isAdmin"
-    ],
-    "Query-allContracts": [
-      "isAdmin"
-    ],
-    "Product-name": [
-      "isAdmin"
-    ]
+    "AddToContractOnUserPayload-userUser": ["isAdmin"],
+    "Mutation-createClient": ["isAdmin"],
+    "Query-allContracts": ["isAdmin"],
+    "Product-name": ["isAdmin"]
   }
 }

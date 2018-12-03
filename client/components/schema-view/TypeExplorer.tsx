@@ -108,8 +108,8 @@ const FieldItem = ({
               </List>
             </ExpansionPanelDetails>
             <Divider />
-            <ExpansionPanelActions>
-              {!isViewOnlyMode && (
+            {!isViewOnlyMode && (
+              <ExpansionPanelActions>
                 <RuleManagementButton
                   isViewOnlyMode
                   allActiveRulesMap={allActiveRulesMap}
@@ -121,8 +121,8 @@ const FieldItem = ({
                   text="Manage rules"
                   height={36}
                 />
-              )}
-            </ExpansionPanelActions>
+              </ExpansionPanelActions>
+            )}
           </div>
         )}
       </ExpansionPanel>

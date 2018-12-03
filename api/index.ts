@@ -9,7 +9,13 @@ import * as logger from 'morgan';
 import { join, resolve } from 'path';
 import { error, info } from 'signale';
 import { getTypes } from '../utils/schema-introspection';
-import { setResolveInfo, setSchema, setSchemaIntrospection, setTypes } from './services/config-repository';
+import {
+  setRequestArgs,
+  setResolveInfo,
+  setSchema,
+  setSchemaIntrospection,
+  setTypes
+} from './services/config-repository';
 import { turtleRouter } from './turtle/router';
 
 const app = express();
@@ -35,7 +41,8 @@ app.get('*', (_request, response) => {
 request(process.env.GRAPH_API_URL, introspectionQuery)
   .then((introspection: any) => {
     const schema = buildClientSchema(introspection);
-    addSchemaLevelResolveFunction(schema, (_p1, _p2, _p3, resolveInfo) => {
+    addSchemaLevelResolveFunction(schema, (_parent, args, _p3, resolveInfo) => {
+      setRequestArgs(args);
       setResolveInfo(resolveInfo);
     });
     setSchemaIntrospection(introspection);

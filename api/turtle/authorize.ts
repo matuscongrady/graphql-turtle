@@ -1,6 +1,8 @@
 import { graphql } from 'graphql';
 import * as getFields from 'graphql-fields';
+import request from 'graphql-request';
 import { appConfig } from '../services/config-repository';
+import cache from './cache';
 
 const getTypeName = str => JSON.stringify(str).replace(/[^a-zA-Z ]/g, '');
 
@@ -13,26 +15,35 @@ const getRequestedOpsFromSelections = (fields, parentTypeName, agg) => {
   }
 };
 
-const evaluate = ruleDefinition => {
+const evaluate = (ruleDefinition, requestor, request): Promise<{ pass: boolean }> => { // tslint:disable-line
   return new Promise(async (resolve, reject) => {
     try {
-      const exports = { handler: () => Promise.resolve(true) };
-      eval(ruleDefinition);
-      const res = exports.handler();
-      // means the result is promise and we need to await it
+      const handler = eval(`(function() {
+          const exports = {};
+          ${ruleDefinition};
+          return exports.handler;
+        })();
+      `);
+      const res = handler(requestor, request, appConfig.requestArgs);
+
+      // means the result is a promise and we need to wait for it
       if (res.then) {
-        const resolvedRes = await res;
-        resolve(resolvedRes);
+        try {
+          const resolvedRes = await res;
+          resolve({ pass: resolvedRes });
+        } catch (err) {
+          reject(err);
+        }
       } else {
-        resolve(res);
+        resolve({ pass: res });
       }
-    } catch (e) {
-      reject(e);
+    } catch (err) {
+      reject(err);
     }
   });
 };
 
-export const authorize = async (query: string, _requestor: object) => {
+export const authorize = async (query: string, requestor: object) => {
   graphql(appConfig.schema, query);
   const { resolveInfo: info } = appConfig;
 
@@ -47,9 +58,21 @@ export const authorize = async (query: string, _requestor: object) => {
     }
   });
   const ruleNamesToCheck = Array.from(setOfRuleNamesToCheck);
-  const rulesToCheck = appConfig.config.availableRules
-    .filter(rule => ruleNamesToCheck.includes(rule.name))
-    .map(rule => rule.ruleDefinition);
+  const rulesToCheck = appConfig.config.availableRules.filter(rule => ruleNamesToCheck.includes(rule.name));
 
-  const ruleResults = await Promise.all(rulesToCheck.map(evaluate));
+  const ruleResults = await Promise.all(
+    rulesToCheck.map(rule =>
+      evaluate(rule.ruleDefinition, requestor, request)
+        .then(res => ({ pass: res.pass, ruleName: rule.name }))
+        .catch(err => ({
+          err: err.message,
+          pass: false,
+          ruleName: rule.name
+        }))
+    )
+  );
+  if (ruleResults.some(result => !result.pass)) {
+    return { pass: false, failedRules: ruleResults.filter(rule => !rule.pass) };
+  }
+  return { pass: true };
 };

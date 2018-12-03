@@ -4,6 +4,15 @@ import { resolve } from 'path';
 import { fatal } from 'signale';
 import { TypeField } from '../../utils/schema-introspection';
 
+interface AppConfig {
+  config: TurtleConfig;
+  schema?: GraphQLSchema;
+  resolveInfo: GraphQLResolveInfo;
+  introspection: SchemaIntrospection;
+  requestArgs: any;
+  types: TypeField[];
+}
+
 const isDev = process.env.NODE_ENV === 'development';
 
 const handleMissingConfig = (configPath: string) => {
@@ -26,20 +35,13 @@ export const getTurtleConfig = () => {
   }
 };
 
-interface AppConfig {
-  config: TurtleConfig;
-  schema?: GraphQLSchema;
-  resolveInfo: GraphQLResolveInfo;
-  introspection: SchemaIntrospection;
-  types: TypeField[];
-}
-
 export const appConfig: AppConfig = {
   config: getTurtleConfig(),
   schema: null,
   resolveInfo: null,
   introspection: null,
-  types: []
+  types: [],
+  requestArgs: null
 };
 
 export const setConfig = config => {
@@ -56,6 +58,10 @@ export const setTypes = types => {
 
 export const setResolveInfo = resolveInfo => {
   appConfig.resolveInfo = resolveInfo;
+};
+
+export const setRequestArgs = requestArgs => {
+  appConfig.requestArgs = requestArgs;
 };
 
 export const setSchemaIntrospection = introspection => {

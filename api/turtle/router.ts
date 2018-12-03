@@ -18,18 +18,19 @@ turtleRouter.get('/config', (_req, res) => {
   res.json(appConfig.config);
 });
 
-turtleRouter.post('/check', (req, res) => {
+turtleRouter.post('/check', async (req, res) => {
   const { requestor: requestorJSON, query } = req.body;
 
   try {
     const validationErrors = validate(appConfig.schema, parse(query));
     if (validationErrors.length) {
-      return res.json({ error: true, message: validationErrors[0].message });
+      return res.json({ error: true, message: validationErrors[0].message, pass: false });
     }
     const requestor = JSON.parse(requestorJSON);
-    return res.json({ isAuthorized: authorize(query, requestor) });
+    const authorizationResult = await authorize(query, requestor);
+    return res.status(200).json(authorizationResult);
   } catch (e) {
     error(e);
-    return res.json({ error: true, message: 'Error validating query' });
+    return res.json({ error: true, message: 'Error validating query', pass: false });
   }
 });

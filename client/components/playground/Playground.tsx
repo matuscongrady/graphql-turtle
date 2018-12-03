@@ -13,7 +13,7 @@ export default ({  }: RuleUserProps) => {
   const [response, setResponse] = React.useState('');
   const [error, setError] = React.useState<string>(null);
   const [isLoading, setLoading] = React.useState<boolean>(false);
-  const isSendDisabled = Boolean(isLoading || error || !query || !requestor);
+  const isSendDisabled = Boolean(isLoading || !query || !requestor);
 
   function handleQueryChange(value) {
     setQuery(value);
@@ -42,17 +42,18 @@ export default ({  }: RuleUserProps) => {
     })
       .then(res => res.json())
       .then(res => {
+        if (!res.pass || res.err) throw res;
         setLoading(false);
-        if (res.error) {
-          return setError(res.message);
-        }
         setResponse(res);
         setError(null);
       })
-      .catch(() => {
+      .catch(err => {
+        const errorMessage = err.failedRules
+          ? `Failed rules: ${err.failedRules.map(failedRule => failedRule.ruleName).join(', ')}`
+          : 'Network error';
         setLoading(false);
         setResponse(null);
-        setError('Network error');
+        setError(errorMessage);
       });
   }
 

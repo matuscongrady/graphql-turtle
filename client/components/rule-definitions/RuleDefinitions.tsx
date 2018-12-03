@@ -29,30 +29,48 @@ import MonacoEditor from 'react-monaco-editor';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import prism from 'react-syntax-highlighter/styles/prism';
 
-const initialValue = `exports.handler = function(requestor, args, request) {
+const initialRuleDefinition = `exports.handler = function(requestor, args, request) {
   return requestor.role === 'ADMIN';
 }`;
+
+let ruleNameToEdit = '';
 
 export default ({
   setAllActiveRulesMap,
   setAllAvailableRules,
   allActiveRulesMap,
-  allAvailableRules
+  allAvailableRules,
+  isViewOnlyMode
 }: RuleUserProps) => {
   const { setTrue: openDialog, setFalse: closeDialog, value: isDialogOpen } = useBoolean(false);
   const [ruleName, setRuleName] = React.useState('');
-  const [cacheValidity, setCacheValidity] = React.useState('');
-  const [ruleDefinition, setRuleDefinition] = React.useState(initialValue);
+  const [cacheValidity, setCacheValidity] = React.useState('0');
+  const [ruleDefinition, setRuleDefinition] = React.useState(initialRuleDefinition);
   const [isEditMode, setIsEditMode] = React.useState(false);
 
-  function createNewRule() {
-    setAllAvailableRules(
-      allAvailableRules.concat({ ruleDefinition, cacheValidity: Number(cacheValidity), name: ruleName })
-    );
+  function saveRule() {
+    if (isEditMode) {
+      setAllAvailableRules(
+        allAvailableRules.map(item =>
+          item.name === ruleNameToEdit ? { ruleDefinition, cacheValidity: Number(cacheValidity), name: ruleName } : item
+        )
+      );
+    } else {
+      setAllAvailableRules(
+        allAvailableRules.concat({ ruleDefinition, cacheValidity: Number(cacheValidity), name: ruleName })
+      );
+    }
     setRuleName('');
-    setRuleDefinition('');
+    setRuleDefinition(initialRuleDefinition);
+    setCacheValidity('0');
     closeDialog();
   }
+
+  const handleSetCacheValidity = e => {
+    const val = e.target.value;
+    if ((Number.isNaN(Number(val)) || val < 0 || (val !== '0' && val.startsWith('0'))) && val !== '') return;
+    setCacheValidity(val);
+  };
 
   const deleteRule = (name: string) => () => {
     if (window.confirm('This will delete all associated active rules from all fields/types. Proceed?')) {
@@ -64,10 +82,12 @@ export default ({
     }
   };
 
-  const openEditRuleDialog = (name: string, definition: string) => () => {
+  const openEditRuleDialog = (rule: AvailableRule) => () => {
+    ruleNameToEdit = rule.name;
     setIsEditMode(true);
-    setRuleName(name);
-    setRuleDefinition(definition);
+    setRuleName(rule.name);
+    setRuleDefinition(rule.ruleDefinition);
+    setCacheValidity(String(rule.cacheValidity));
     openDialog();
   };
 
@@ -81,14 +101,15 @@ export default ({
   const uniqueRuleNameBrokenError =
     !isEditMode && allAvailableRules.find(rule => rule.name === ruleName) && 'Rule with this name already exists';
   const canCreateRule = !ruleName || !isValidCode || !!uniqueRuleNameBrokenError;
-  console.log(cacheValidity);
 
   return (
     <div>
-      <Button onClick={openCreateRuleDialog} variant="contained" color="primary" aria-label="Add">
-        <AddIcon />
-        &nbsp;Create new rule
-      </Button>
+      {!isViewOnlyMode && (
+        <Button onClick={openCreateRuleDialog} variant="contained" color="primary" aria-label="Add">
+          <AddIcon />
+          &nbsp;Create new rule
+        </Button>
+      )}
       <div style={{ paddingTop: '15px' }}>
         {allAvailableRules.map(rule => (
           <ExpansionPanel key={rule.name}>
@@ -102,12 +123,17 @@ export default ({
               </SyntaxHighlighter>
             </ExpansionPanelDetails>
             <ExpansionPanelActions>
-              <Fab onClick={openEditRuleDialog(rule.name, rule.ruleDefinition)} color="primary" aria-label="Add">
-                <EditIcon />
-              </Fab>
-              <Fab color="secondary" onClick={deleteRule(rule.name)} aria-label="Edit">
-                <DeleteIcon />
-              </Fab>
+              <SyntaxHighlighter style={prism}>{`Cache validity: ${rule.cacheValidity}`}</SyntaxHighlighter>
+              {!isViewOnlyMode && (
+                <>
+                  <Fab onClick={openEditRuleDialog(rule)} color="primary" aria-label="Add">
+                    <EditIcon />
+                  </Fab>
+                  <Fab color="secondary" onClick={deleteRule(rule.name)} aria-label="Edit">
+                    <DeleteIcon />
+                  </Fab>
+                </>
+              )}
             </ExpansionPanelActions>
           </ExpansionPanel>
         ))}
@@ -143,11 +169,15 @@ export default ({
               <Grid style={{ width: '50%' }} item>
                 <TextField
                   value={cacheValidity}
-                  type="number"
+                  type="string"
+                  inputProps={{
+                    min: 0,
+                    max: 86400
+                  }}
                   margin="dense"
                   label="Cache validity in seconds (0 to disable cache)"
                   fullWidth
-                  onChange={e => setCacheValidity(Number(e.target.value))}
+                  onChange={handleSetCacheValidity}
                 />
               </Grid>
             </Grid>
@@ -180,8 +210,8 @@ export default ({
           <Button onClick={closeDialog} color="primary">
             Cancel
           </Button>
-          <Button disabled={canCreateRule} onClick={createNewRule} variant="contained" color="primary">
-            Create rule
+          <Button disabled={canCreateRule} onClick={saveRule} variant="contained" color="primary">
+            Save
           </Button>
         </DialogActions>
       </Dialog>

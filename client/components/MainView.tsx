@@ -6,7 +6,7 @@ import {
 import { getExportDataURI, getURL } from '@/utils/parsing';
 import ImportConfig from '@components/import-config/ImportConfig';
 import Playground from '@components/playground/Playground';
-import RuleManager from '@components/rule-manager/RuleManager';
+import RuleDefinitions from '@components/rule-definitions/RuleDefinitions';
 import TypeExplorer from '@components/schema-view/TypeExplorer';
 import { AppBar, Button, CircularProgress, Tab, Tabs, TextField } from '@material-ui/core';
 import ExportIcon from '@material-ui/icons/PresentToAll';
@@ -94,7 +94,7 @@ export default ({ config, isViewOnlyMode }: { config?: any; path?: string; isVie
   };
 
   return (
-    <main style={{ width: '80%', margin: 'auto', paddingTop: '20px' }}>
+    <main style={{ width: '80%', margin: 'auto', paddingTop: '20px', marginBottom: '10px' }}>
       {!isLoading && !error && !schemaIntrospection && (
         <p>Download schema introspection to start working with your config</p>
       )}
@@ -134,7 +134,7 @@ export default ({ config, isViewOnlyMode }: { config?: any; path?: string; isVie
           <Tab label="Query rules" />
           <Tab label="Mutation rules" />
           <Tab label="Per-Type rules" />
-          <Tab label="Rule manager" />
+          <Tab label="Rule definitions" />
           <Tab label="Playground" />
           {!isViewOnlyMode && <Tab label="Import config" />}
         </Tabs>
@@ -155,7 +155,7 @@ export default ({ config, isViewOnlyMode }: { config?: any; path?: string; isVie
       {selectedViewIndex === 2 && !isLoading && schemaIntrospection && (
         <TypeExplorer {...rulesControlProps} parentType={RootParentType.TYPE} fields={schemaIntrospection.types} />
       )}
-      {selectedViewIndex === 3 && <RuleManager {...rulesControlProps} />}
+      {selectedViewIndex === 3 && <RuleDefinitions isViewOnlyMode={isViewOnlyMode} {...rulesControlProps} />}
       {selectedViewIndex === 4 && <Playground {...rulesControlProps} />}
       {selectedViewIndex === 5 && <ImportConfig {...rulesControlProps} setURL={setURL} />}
     </main>
