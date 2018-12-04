@@ -7,7 +7,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Fab,
   FormControl,
   IconButton,
   InputLabel,
@@ -97,17 +96,18 @@ export default ({
           </Button>
         </DialogActions>
       </Dialog>
-      <Fab
+      <Button
         style={{ height: `${height}px`, minHeight: `${height}px` }}
         onClick={e => {
           openDialog();
           e.stopPropagation();
         }}
+        variant="extendedFab"
         aria-label="Add"
       >
         <EditIcon />
         &nbsp;{text}
-      </Fab>
+      </Button>
     </>
   );
 };
