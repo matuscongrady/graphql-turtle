@@ -2,7 +2,7 @@ import { graphql } from 'graphql';
 import * as getFields from 'graphql-fields';
 import request from 'graphql-request';
 import { appConfig } from '../services/config-repository';
-import cache from './cache';
+import { cache, getHash } from './cache';
 
 const getTypeName = str => JSON.stringify(str).replace(/[^a-zA-Z ]/g, '');
 
@@ -15,8 +15,15 @@ const getRequestedOpsFromSelections = (fields, parentTypeName, agg) => {
   }
 };
 
-const evaluate = (ruleDefinition, requestor, request): Promise<{ pass: boolean }> => { // tslint:disable-line
+const evaluate = (
+  { ruleDefinition, cacheValidity, name }: AvailableRule,
+  requestor: any
+): Promise<{ pass: boolean; cached?: boolean }> => {
   return new Promise(async (resolve, reject) => {
+    const key = getHash(name, requestor, appConfig.requestArgs);
+
+    const cachedValue = cache.get(key);
+    if (cachedValue) resolve({ pass: cachedValue, cached: true });
     try {
       const handler = eval(`(function() {
           const exports = {};
@@ -30,14 +37,18 @@ const evaluate = (ruleDefinition, requestor, request): Promise<{ pass: boolean }
       if (res.then) {
         try {
           const resolvedRes = await res;
+          cache.set(key, cacheValidity, Boolean(resolvedRes));
           resolve({ pass: resolvedRes });
         } catch (err) {
+          cache.set(key, cacheValidity, false);
           reject(err);
         }
       } else {
+        cache.set(key, cacheValidity, Boolean(res));
         resolve({ pass: res });
       }
     } catch (err) {
+      cache.set(key, cacheValidity, false);
       reject(err);
     }
   });
@@ -62,15 +73,17 @@ export const authorize = async (query: string, requestor: object) => {
 
   const ruleResults = await Promise.all(
     rulesToCheck.map(rule =>
-      evaluate(rule.ruleDefinition, requestor, request)
-        .then(res => ({ pass: res.pass, ruleName: rule.name }))
+      evaluate(rule, requestor)
+        .then(res => ({ pass: res.pass, ruleName: rule.name, cached: res.cached || false }))
         .catch(err => ({
           err: err.message,
           pass: false,
-          ruleName: rule.name
+          ruleName: rule.name,
+          cached: false
         }))
     )
   );
+
   if (ruleResults.some(result => !result.pass)) {
     return { pass: false, failedRules: ruleResults.filter(rule => !rule.pass) };
   }

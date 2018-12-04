@@ -1,3 +1,44 @@
 {
-	"message": "hello"
+  "endpointURL": "api.graph.cool/simple/v1/cj7j2myai03tg0194pj6cjr5d",
+  "availableRules": [
+    {
+      "ruleDefinition": "exports.handler = function(requestor, args, request) {\n  return requestor.role === 'ADMIN';\n}",
+      "cacheValidity": 600,
+      "name": "isAdmin"
+    },
+    {
+      "ruleDefinition": "exports.handler = function(requestor, args, request) {\n  return requestor.role === 'ADMIN' || requestor.role === \"MEMBER\";\n}",
+      "cacheValidity": 1200,
+      "name": "isAdminOrMember"
+    },
+    {
+      "ruleDefinition": "// shorter cache duration because remote data can change\nexports.handler = async function(requestor, args, request) {\n  // for non-trivial use-cases\n  return request(api_endpoint, `\n    allClients {\n      id\n    }\n  `).then(data => {\n    // do something with data\n    return true;\n  }).catch(err => {\n    // error occured\n    return false;\n  })\n}",
+      "cacheValidity": 30,
+      "name": "asyncRule"
+    }
+  ],
+  "activeRules": {
+    "AddToContractOnUserPayload-userUser": [
+      "isAdmin"
+    ],
+    "Mutation-createClient": [
+      "isAdmin",
+      "asyncRule",
+      "isAdminOrMember"
+    ],
+    "Query-allContracts": [
+      "isAdmin"
+    ],
+    "Product-name": [
+      "isAdmin"
+    ],
+    "Type-Client": [
+      "isAdmin",
+      "asyncRule",
+      "isAdminOrMember"
+    ],
+    "Type-Product": [
+      "isAdminOrMember"
+    ]
+  }
 }

@@ -13,7 +13,7 @@
     },
     {
       "ruleDefinition": "// shorter cache duration because remote data can change\nexports.handler = async function(requestor, args, request) {\n  // for non-trivial use-cases\n  return request(api_endpoint, `\n    allClients {\n      id\n    }\n  `).then(data => {\n    // do something with data\n    return true;\n  }).catch(err => {\n    // error occured\n    return false;\n  })\n}",
-      "cacheValidity": 10,
+      "cacheValidity": 30,
       "name": "asyncRule"
     }
   ],

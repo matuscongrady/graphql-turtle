@@ -3,6 +3,7 @@ import { GraphQLResolveInfo, GraphQLSchema } from 'graphql';
 import { resolve } from 'path';
 import { fatal } from 'signale';
 import { TypeField } from '../../utils/schema-introspection';
+import { cache } from '../turtle/cache';
 
 interface AppConfig {
   config: TurtleConfig;
@@ -45,6 +46,7 @@ export const appConfig: AppConfig = {
 };
 
 export const setConfig = config => {
+  cache.clear();
   appConfig.config = config;
 };
 
