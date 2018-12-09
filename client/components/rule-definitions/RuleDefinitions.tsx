@@ -29,7 +29,7 @@ import MonacoEditor from 'react-monaco-editor';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import prism from 'react-syntax-highlighter/styles/prism';
 
-const initialRuleDefinition = `exports.handler = function(requestor, args, request) {
+const initialRuleDefinition = `exports.handler = function(requestor, args, request, fetch, config) {
   return requestor.role === 'ADMIN';
 }`;
 

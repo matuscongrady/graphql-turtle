@@ -1,6 +1,7 @@
 import { graphql } from 'graphql';
 import * as getFields from 'graphql-fields';
 import request from 'graphql-request';
+import fetch from 'node-fetch';
 import { appConfig } from '../services/config-repository';
 import { cache, getHash } from './cache';
 
@@ -31,7 +32,7 @@ const evaluate = (
           return exports.handler;
         })();
       `);
-      const res = handler(requestor, request, appConfig.requestArgs);
+      const res = handler(requestor, appConfig.requestArgs, request, fetch, appConfig.config);
 
       // means the result is a promise and we need to wait for it
       if (res.then) {

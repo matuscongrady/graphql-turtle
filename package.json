@@ -35,6 +35,7 @@
     "graphql-tools": "^4.0.3",
     "lodash": "^4.17.10",
     "morgan": "^1.9.1",
+    "node-fetch": "^2.3.0",
     "object-hash": "^1.3.1",
     "react": "^16.7.0-alpha.0",
     "react-data-fetching": "^0.2.4",
