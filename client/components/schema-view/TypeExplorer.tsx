@@ -45,7 +45,6 @@ const FieldItem = ({
   setAllAvailableRules,
   isViewOnlyMode
 }: FieldItemProps) => {
-  const uniqueTypeFieldName = getUniqueTypeFieldName(parentType, field.name);
   const { value: isExpanded, toggle } = useBoolean(false);
   return (
     <>
@@ -62,7 +61,7 @@ const FieldItem = ({
             {field.name}&nbsp;&nbsp;
             <Chip
               style={{ height: '24px' }}
-              label={`(${getRulesCount(setAllActiveRulesMap, uniqueTypeFieldName)} rules)`}
+              label={`(${getRulesCount(allActiveRulesMap, getUniqueTypeFieldName(parentType, field.name))} rules)`}
             />
             <TypeChip field={field} />
           </Typography>

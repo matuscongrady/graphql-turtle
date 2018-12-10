@@ -60,7 +60,7 @@ export default ({
     <>
       <Dialog open={isDialogOpen} onClose={closeDialog} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">
-          Set rules for rule <b>{fieldName}</b> on type <b>{parentType}</b>
+          Set rules for field <b>{fieldName}</b> on type <b>{parentType}</b>
         </DialogTitle>
         <DialogContent>
           <DialogContentText>You can attach any custom rule from rule-manager.</DialogContentText>
