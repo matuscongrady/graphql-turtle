@@ -10,8 +10,8 @@
     "dev:client": "npx cross-env NODE_ENV=development webpack-dev-server",
     "dev:api": "env-cmd api/.env.dev ts-node-dev --no-notify api/index.ts",
     "analyze": "npx rimraf dist && npx cross-env NODE_ENV=production APP_ENV=analyze webpack --hide-modules",
-    "docker:build": "yarn build:api && yarn build:client && docker build -t turtle .",
-    "docker:run": "docker run -v ${PWD}/turtle-config.json:/app/turtle-config.json -p 4000:4000 turtle",
+    "docker:build": "yarn build:api && yarn build:client && docker build -t congy/turtle .",
+    "docker:run": "docker run -v ${PWD}/turtle-config.json:/app/turtle-config.json -p 4000:4000 congy/turtle",
     "build:client": "npx rimraf dist-client && npx cross-env NODE_ENV=production webpack",
     "build:api": "npx rimraf dist-api && npx tsc --outDir dist-api -p 'tsconfig.api.json'",
     "test:docker:dist": "yarn docker:build && yarn docker:run"

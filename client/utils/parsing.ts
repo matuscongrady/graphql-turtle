@@ -27,8 +27,14 @@ export const getActiveRules = (parentType: string, type: string, stringifiedValu
   return ruleMap[parentType] ? ruleMap[parentType][type] || [] : [];
 };
 
-export const getExportDataURI = () => {
-  return `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(getFullConfig(), null, 2))}`;
+export const getExportDataURI = (
+  endpointURL: string,
+  availableRules: AvailableRule[],
+  activeRulesMap: AllActiveRulesMap
+) => {
+  return `data:text/json;charset=utf-8,${encodeURIComponent(
+    JSON.stringify({ endpointURL, availableRules, activeRulesMap }, null, 2)
+  )}`;
 };
 
 export const getFullConfig = (): TurtleConfig => {

@@ -66,6 +66,8 @@ export default ({ config, isViewOnlyMode }: { config?: any; path?: string; isVie
     setURL(value);
   }
 
+  const exportDataURI = getExportDataURI(url, allAvailableRules, allActiveRulesMap);
+
   function downloadSchemaIntrospection(presetURL?: string) {
     setLoading(true);
     setError(false);
@@ -122,7 +124,7 @@ export default ({ config, isViewOnlyMode }: { config?: any; path?: string; isVie
           style={{ float: 'right' }}
           variant="contained"
           color="primary"
-          href={getExportDataURI()}
+          href={exportDataURI}
           download="turtle-config.json"
         >
           <ExportIcon />
